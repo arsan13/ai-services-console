@@ -8,6 +8,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 20px;
+  white-space: pre-wrap;   // preserve line breaks
 }
 
 .message {

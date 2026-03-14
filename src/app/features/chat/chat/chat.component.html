@@ -5,9 +5,11 @@
     @for (msg of chatService.messages(); track msg.id) {
 
     <div class="message" [ngClass]="msg.role">
-
-      {{ msg.content }}
-
+      @if (msg.role === 'bot') {
+        <markdown [data]="msg.content"></markdown>
+      } @else {
+        {{ msg.content }}
+      } 
     </div>
 
     }

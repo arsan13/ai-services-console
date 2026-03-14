@@ -22,13 +22,13 @@ export class ChatbotService {
 
     this.messages.update(m => [...m, userMessage]);
 
-    this.http.post<any>('http://localhost:3000/chat', { message: text })
+    this.http.get<any>(`http://localhost:8080/api/ai/chat?message=${text}`)
       .subscribe(res => {
 
         const botMessage: Message = {
           id: crypto.randomUUID(),
           role: 'bot',
-          content: res.reply,
+          content: res.content,
           timestamp: new Date()
         };
 
