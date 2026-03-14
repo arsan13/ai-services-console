@@ -4,3 +4,7 @@ export interface Message {
   content: string;
   timestamp?: Date;
 }
+
+export interface ChatResponse {
+  content: string;
+}

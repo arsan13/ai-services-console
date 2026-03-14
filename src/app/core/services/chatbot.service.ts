@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Message } from '../../features/chat/message.model';
+import { ChatResponse, Message } from '../../features/chat/message.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +22,8 @@ export class ChatbotService {
 
     this.messages.update(m => [...m, userMessage]);
 
-    this.http.get<any>(`http://localhost:8080/api/ai/chat?message=${text}`)
-      .subscribe(res => {
+    this.http.get<ChatResponse>(`http://localhost:8080/api/ai/chat?message=${text}`)
+      .subscribe((res: ChatResponse) => {
 
         const botMessage: Message = {
           id: crypto.randomUUID(),
