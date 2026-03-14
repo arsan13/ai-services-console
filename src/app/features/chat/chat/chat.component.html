@@ -1,35 +1,37 @@
 <mat-card class="chat-card">
-
   <div class="messages">
-
     @for (msg of chatService.messages(); track msg.id) {
-
-    <div class="message" [ngClass]="msg.role">
-      @if (msg.role === 'bot') {
-        <markdown [data]="msg.content"></markdown>
-      } @else {
-        {{ msg.content }}
-      } 
-    </div>
-
+      <div class="message" [ngClass]="msg.role">
+        @if (msg.role === 'bot') {
+          <markdown [data]="msg.content"></markdown>
+        } @else {
+          {{ msg.content }}
+        }
+      </div>
     }
 
+    @if (chatService.loading()) {
+      <div class="loader">
+        <mat-progress-spinner diameter="40" mode="indeterminate" color="primary">
+        </mat-progress-spinner>
+      </div>
+      <!-- <mat-progress-bar mode="indeterminate"></mat-progress-bar> -->
+    }
   </div>
 
+
   <div class="input-area">
-
     <mat-form-field appearance="outline" class="input">
-
-      <input matInput placeholder="Type a message..." [(ngModel)]="message" (keyup.enter)="send()">
-
+      <input
+        matInput
+        placeholder="Type a message..."
+        [(ngModel)]="message"
+        (keyup.enter)="send()"
+      />
     </mat-form-field>
 
     <button mat-fab color="primary" (click)="send()">
-
       <mat-icon>send</mat-icon>
-
     </button>
-
   </div>
-
 </mat-card>

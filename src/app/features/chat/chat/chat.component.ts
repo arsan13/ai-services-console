@@ -8,6 +8,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-chat',
@@ -19,16 +21,17 @@ import { MatInputModule } from '@angular/material/input';
     MatCardModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule
   ],
   templateUrl: './chat.component.html',
-  styleUrl: './chat.component.scss'
+  styleUrl: './chat.component.scss',
 })
 export class ChatComponent {
-
   message = '';
 
-  constructor(public chatService: ChatbotService) { }
+  constructor(public chatService: ChatbotService) {}
 
   send() {
     if (!this.message.trim()) return;
@@ -36,5 +39,4 @@ export class ChatComponent {
     this.chatService.sendMessage(this.message);
     this.message = '';
   }
-
 }
