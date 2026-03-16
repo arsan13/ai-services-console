@@ -9,14 +9,6 @@
         }
       </div>
     }
-
-    @if (chatService.loading()) {
-      <div class="loader">
-        <mat-progress-spinner diameter="40" mode="indeterminate" color="primary">
-        </mat-progress-spinner>
-      </div>
-      <!-- <mat-progress-bar mode="indeterminate"></mat-progress-bar> -->
-    }
   </div>
 
 
@@ -30,8 +22,15 @@
       />
     </mat-form-field>
 
-    <button mat-fab color="primary" (click)="send()">
-      <mat-icon>send</mat-icon>
-    </button>
+    @if (chatService.loading()) {
+      <div class="loader">
+        <mat-progress-spinner diameter="40" mode="indeterminate" color="primary">
+        </mat-progress-spinner>
+      </div>
+    } @else {
+      <button mat-fab color="primary" (click)="send()" [disabled]="this.message.trim().length < 1">
+        <mat-icon>send</mat-icon>
+      </button>
+    }
   </div>
 </mat-card>
