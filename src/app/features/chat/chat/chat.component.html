@@ -19,6 +19,7 @@
         placeholder="Type a message..."
         [(ngModel)]="message"
         (keyup.enter)="send()"
+        (keydown)="handleKey($event)"
       />
     </mat-form-field>
 
