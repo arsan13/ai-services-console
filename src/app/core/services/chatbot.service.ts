@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ChatResponse, Message } from '../../features/chat/message.model';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { ChatRequest, ChatResponse, Message } from '../../features/chat/message.model';
+import { ApiResponse } from '../api.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,32 +12,45 @@ export class ChatbotService {
 
   constructor(private http: HttpClient) {}
 
-  sendMessage(text: string) {
+  sendMessage(message: string) {
     this.loading.set(true);
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
       role: 'user',
-      content: text,
+      content: message,
       timestamp: new Date(),
     };
 
     this.messages.update((m) => [...m, userMessage]);
 
-    this.http.get<ChatResponse>(`http://localhost:8080/api/ai/chat?message=${text}`).subscribe({
-      next: (res: ChatResponse) => {
-        const botMessage: Message = {
-          id: crypto.randomUUID(),
-          role: 'bot',
-          content: res.content,
-          timestamp: new Date(),
-        };
-        this.messages.update((m) => [...m, botMessage]);
-        this.loading.set(false);
+    const body: ChatRequest = { message };
+    this.http.post<ApiResponse<ChatResponse>>(`http://localhost:8080/api/ai/chat`, body).subscribe({
+      next: (res: ApiResponse<ChatResponse>) => {
+        this.handleResponse(res.data?.content);
       },
-      error: () => {
-        this.loading.set(false);
+      error: (err: HttpErrorResponse) => {
+        console.error(err);
+        const msg =
+          err.error?.message ??
+          err.message ??
+          'Something went wrong';
+        this.handleResponse(msg);
       },
+      complete: () => {
+        this.loading.set(false);
+      }
     });
+  }
+
+  private handleResponse(content: string | undefined) {
+    const botMessage: Message = {
+      id: crypto.randomUUID(),
+      role: 'bot',
+      content: content || "No response",
+      timestamp: new Date(),
+    };
+    this.messages.update((m) => [...m, botMessage]);
+    this.loading.set(false);
   }
 }
