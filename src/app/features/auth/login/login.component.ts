@@ -5,6 +5,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthProvider } from '../../../core/enums/auth-provider.enum';
+import { finalize } from 'rxjs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +16,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatCardModule,
     MatFormField,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -21,14 +25,21 @@ import { MatButtonModule } from '@angular/material/button';
 export class LoginComponent {
   username = '';
   password = '';
+  isLoading = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
   onSubmit() {
+    this.isLoading = true;
     this.auth.login({ username: this.username, password: this.password })
-      .subscribe(res => {
-        this.auth.saveToken(res.token);
-        this.router.navigate(['/']);
+      .pipe(finalize(() => {
+        this.isLoading = false;
+      }))
+      .subscribe({
+        next: res => {
+          this.auth.saveToken(res.token);
+          this.router.navigate(['/']);
+        }
       });
   }
 
@@ -37,10 +48,10 @@ export class LoginComponent {
   }
 
   loginWithGoogle() {
-    this.auth.oauth2Login('google');
+    this.auth.oauth2Login(AuthProvider.GOOGLE);
   }
 
   loginWithGithub() {
-    this.auth.oauth2Login('github');
+    this.auth.oauth2Login(AuthProvider.GITHUB);
   }
 }

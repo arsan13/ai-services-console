@@ -1,7 +1,11 @@
+import { Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { AuthResponse } from '../models/auth.model';
+import { AuthProvider } from '../enums/auth-provider.enum';
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -11,14 +15,14 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(data: { username: string; password: string }) {
-    return this.http.post<any>(`${this.apiUrl}/login`, data);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, data);
   }
 
   register(data: { fullname: string; username: string; password: string }) {
-    return this.http.post<any>(`${this.apiUrl}/register`, data);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data);
   }
 
-  oauth2Login(provider: string) {
+  oauth2Login(provider: AuthProvider) {
     window.location.href = `${this.apiUrl}/oauth2/${provider}`;
   }
 

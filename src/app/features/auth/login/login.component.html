@@ -1,19 +1,33 @@
-<mat-card>
-  <h2>Login</h2>
+<section class="auth-shell">
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
 
-  <form (ngSubmit)="onSubmit()">
-    <mat-form-field>
-      <input matInput placeholder="Username" [(ngModel)]="username" name="username" required />
-    </mat-form-field>
+  <mat-card class="auth-card">
+    <p class="eyebrow">Welcome Back</p>
+    <h2>Sign In</h2>
+    <p class="subtitle">Enter your account details to continue your chats.</p>
 
-    <mat-form-field>
-      <input matInput type="password" placeholder="Password" [(ngModel)]="password" name="password" required />
-    </mat-form-field>
+    <form class="auth-form" (ngSubmit)="onSubmit()">
+      <mat-form-field class="field" appearance="outline">
+        <mat-label>Username or Email</mat-label>
+        <input matInput [(ngModel)]="username" name="username" [disabled]="isLoading" required />
+      </mat-form-field>
 
-    <button mat-raised-button color="primary">Login</button>
-  </form>
+      <mat-form-field class="field" appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" [(ngModel)]="password" name="password" [disabled]="isLoading" required />
+        @if (isLoading) {
+          <mat-spinner matSuffix diameter="16"></mat-spinner>
+        }
+      </mat-form-field>
 
-  <button mat-stroked-button (click)="register()">Register</button>
-  <button mat-stroked-button (click)="loginWithGoogle()">Login with Google</button>
-  <button mat-stroked-button (click)="loginWithGithub()">Login with GitHub</button>
-</mat-card>
+      <button class="submit-btn" mat-flat-button color="primary" [disabled]="isLoading">Login</button>
+    </form>
+
+    <div class="alt-actions">
+      <button mat-stroked-button (click)="register()" [disabled]="isLoading">Create Account</button>
+      <button mat-stroked-button (click)="loginWithGoogle()" [disabled]="isLoading">Continue with Google</button>
+      <button mat-stroked-button (click)="loginWithGithub()" [disabled]="isLoading">Continue with GitHub</button>
+    </div>
+  </mat-card>
+</section>
