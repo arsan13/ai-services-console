@@ -1,0 +1,10 @@
+<mat-toolbar color="primary">
+  Airops Assistant
+
+  <span class="spacer"></span>
+  @if (auth.isLoggedIn()) {
+    <button mat-button (click)="logout()">Logout</button>
+  }
+</mat-toolbar>
+
+<router-outlet></router-outlet>

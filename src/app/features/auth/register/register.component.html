@@ -1,0 +1,21 @@
+<mat-card>
+  <h2>Register</h2>
+
+  <form (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <input matInput placeholder="Full Name" [(ngModel)]="fullname" name="fullname" required />
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput placeholder="Username" [(ngModel)]="username" name="username" required />
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput type="password" placeholder="Password" [(ngModel)]="password" name="password" required />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary">Register</button>
+  </form>
+
+  <button mat-stroked-button (click)="login()">Login</button>
+</mat-card>

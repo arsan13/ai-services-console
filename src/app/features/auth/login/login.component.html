@@ -1,0 +1,19 @@
+<mat-card>
+  <h2>Login</h2>
+
+  <form (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <input matInput placeholder="Username" [(ngModel)]="username" name="username" required />
+    </mat-form-field>
+
+    <mat-form-field>
+      <input matInput type="password" placeholder="Password" [(ngModel)]="password" name="password" required />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary">Login</button>
+  </form>
+
+  <button mat-stroked-button (click)="register()">Register</button>
+  <button mat-stroked-button (click)="loginWithGoogle()">Login with Google</button>
+  <button mat-stroked-button (click)="loginWithGithub()">Login with GitHub</button>
+</mat-card>
