@@ -1,5 +1,16 @@
 import { AuthProvider } from "../enums/auth-provider.enum";
 
+export interface LoginPayload {
+  username: string;
+  password: string;
+}
+
+export interface RegisterPayload {
+  fullname: string;
+  username: string;
+  password: string;
+}
+
 export interface AuthResponse {
   token: string;
   userProfile?: UserProfile;

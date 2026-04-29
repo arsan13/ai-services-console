@@ -23,17 +23,15 @@ import { finalize } from 'rxjs';
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   readonly isLoading = signal(false);
   private readonly fb = inject(FormBuilder);
   readonly form = this.fb.nonNullable.group({
     username: ['', [Validators.required, Validators.minLength(3)]],
     password: ['', [Validators.required, Validators.minLength(6)]]
   });
-
-  constructor(
-    private auth: AuthService,
-    private router: Router
-  ) {}
+  readonly controls = this.form.controls;
 
   onSubmit(): void {
     if (this.isLoading() || this.form.invalid) {
@@ -45,7 +43,7 @@ export class LoginComponent {
 
     this.isLoading.set(true);
     this.form.disable({ emitEvent: false });
-    this.auth.login({ username, password })
+    this.authService.login({ username, password })
       .pipe(
         finalize(() => {
           this.isLoading.set(false);
@@ -60,15 +58,15 @@ export class LoginComponent {
       });
   }
 
-  register() {
+  register(): void {
     this.router.navigate(['/register']);
   }
 
-  loginWithGoogle() {
-    this.auth.oauth2Login(AuthProvider.GOOGLE);
+  loginWithGoogle(): void {
+    this.authService.oauth2Login(AuthProvider.GOOGLE);
   }
 
-  loginWithGithub() {
-    this.auth.oauth2Login(AuthProvider.GITHUB);
+  loginWithGithub(): void {
+    this.authService.oauth2Login(AuthProvider.GITHUB);
   }
 }

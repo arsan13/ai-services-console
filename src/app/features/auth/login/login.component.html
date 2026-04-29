@@ -11,9 +11,9 @@
       <mat-form-field class="field" appearance="outline">
         <mat-label>Username or Email</mat-label>
         <input matInput formControlName="username" />
-        @if ((form.controls.username.touched || form.controls.username.dirty) && form.controls.username.hasError('required')) {
+        @if ((controls.username.touched || controls.username.dirty) && controls.username.hasError('required')) {
           <mat-error>Username or email is required.</mat-error>
-        } @else if ((form.controls.username.touched || form.controls.username.dirty) && form.controls.username.hasError('minlength')) {
+        } @else if ((controls.username.touched || controls.username.dirty) && controls.username.hasError('minlength')) {
           <mat-error>Please enter at least 3 characters.</mat-error>
         }
       </mat-form-field>
@@ -21,9 +21,9 @@
       <mat-form-field class="field" appearance="outline">
         <mat-label>Password</mat-label>
         <input matInput type="password" formControlName="password" />
-        @if ((form.controls.password.touched || form.controls.password.dirty) && form.controls.password.hasError('required')) {
+        @if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('required')) {
           <mat-error>Password is required.</mat-error>
-        } @else if ((form.controls.password.touched || form.controls.password.dirty) && form.controls.password.hasError('minlength')) {
+        } @else if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('minlength')) {
           <mat-error>Password must be at least 6 characters.</mat-error>
         }
       </mat-form-field>

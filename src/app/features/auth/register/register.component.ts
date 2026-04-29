@@ -51,6 +51,8 @@ const passwordMatchValidator: ValidatorFn = (control: AbstractControl): Validati
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   readonly isLoading = signal(false);
   private readonly fb = inject(FormBuilder);
   readonly form = this.fb.nonNullable.group({
@@ -61,11 +63,7 @@ export class RegisterComponent {
   }, {
     validators: passwordMatchValidator
   });
-
-  constructor(
-    private auth: AuthService,
-    private router: Router
-  ) {}
+  readonly controls = this.form.controls;
 
   onSubmit(): void {
     if (this.isLoading() || this.form.invalid) {
@@ -77,7 +75,7 @@ export class RegisterComponent {
 
     this.isLoading.set(true);
     this.form.disable({ emitEvent: false });
-    this.auth.register({
+    this.authService.register({
       fullname,
       username,
       password
@@ -94,7 +92,14 @@ export class RegisterComponent {
     });
   }
 
-  login() {
+  login(): void {
     this.router.navigate(['/login']);
+  }
+
+  isPasswordMismatchVisible(): boolean {
+    const passwordTouched = this.controls.password.touched || this.controls.password.dirty;
+    const confirmTouched = this.controls.confirmPassword.touched || this.controls.confirmPassword.dirty;
+
+    return (passwordTouched || confirmTouched) && this.controls.confirmPassword.hasError('passwordMismatch');
   }
 }
