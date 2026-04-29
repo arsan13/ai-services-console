@@ -57,3 +57,17 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Deploy to Vercel (Website)
+
+You can deploy this app directly from the Vercel website without installing the Vercel CLI.
+
+1. Push this repository to GitHub, GitLab, or Bitbucket.
+2. In Vercel, click **Add New...** -> **Project**.
+3. Import this repository.
+4. Keep the default settings or confirm these values:
+	- Build Command: `npm run build`
+	- Output Directory: `dist/ai-services-console/browser`
+5. Click **Deploy**.
+
+This repository includes a `vercel.json` file with the same build/output settings plus SPA rewrite routing.
