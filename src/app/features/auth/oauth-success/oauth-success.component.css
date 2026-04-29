@@ -1,0 +1,12 @@
+.oauth-success-wrapper {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.oauth-success-wrapper p {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}

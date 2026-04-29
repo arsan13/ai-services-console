@@ -1,12 +1,13 @@
 import { Injectable, signal } from '@angular/core';
 import { Message } from '../../features/chat/message.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatbotStreamService {
+  private apiUrl = `${environment.apiUrl}/ai/stream`;
 
-  API_URL = "http://localhost:8080/api/ai/stream";
   messages = signal<Message[]>([]);
 
   constructor() {}
@@ -30,7 +31,7 @@ export class ChatbotStreamService {
     this.messages.update(m => [...this.messages(), botMessage]);
 
     // SSE connection
-    const eventSource = new EventSource(`${this.API_URL}?message=${encodeURIComponent(text)}`);
+    const eventSource = new EventSource(`${this.apiUrl}?message=${encodeURIComponent(text)}`);
 
     eventSource.onmessage = (event) => {
       // Append chunk to bot message

@@ -1,0 +1,46 @@
+<section class="auth-shell">
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <mat-card class="auth-card">
+    <p class="eyebrow">Welcome Back</p>
+    <h2>Sign In</h2>
+    <p class="subtitle">Enter your account details to continue your chats.</p>
+
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <mat-form-field class="field" appearance="outline">
+        <mat-label>Username or Email</mat-label>
+        <input matInput formControlName="username" />
+        @if ((controls.username.touched || controls.username.dirty) && controls.username.hasError('required')) {
+          <mat-error>Username or email is required.</mat-error>
+        } @else if ((controls.username.touched || controls.username.dirty) && controls.username.hasError('minlength')) {
+          <mat-error>Please enter at least 3 characters.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field class="field" appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+        @if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('required')) {
+          <mat-error>Password is required.</mat-error>
+        } @else if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('minlength')) {
+          <mat-error>Password must be at least 6 characters.</mat-error>
+        }
+      </mat-form-field>
+
+      <button class="submit-btn" type="submit" mat-flat-button color="primary" [disabled]="isLoading()">
+        @if (isLoading()) {
+          <mat-spinner diameter="16"></mat-spinner>
+        } @else {
+          <span>Login</span>
+        }
+      </button>
+    </form>
+
+    <div class="alt-actions">
+      <button mat-stroked-button (click)="register()" [disabled]="isLoading()">Create Account</button>
+      <button mat-stroked-button (click)="loginWithGoogle()" [disabled]="isLoading()">Continue with Google</button>
+      <button mat-stroked-button (click)="loginWithGithub()" [disabled]="isLoading()">Continue with GitHub</button>
+    </div>
+  </mat-card>
+</section>

@@ -6,11 +6,15 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "chatbot-ui": {
+    "ai-services-console": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "scss"
+          "style": "scss",
+          "type": "component"
+        },
+        "@schematics/angular:service": {
+          "type": "service"
         }
       },
       "root": "",
@@ -43,6 +47,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -69,10 +79,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "chatbot-ui:build:production"
+              "buildTarget": "ai-services-console:build:production"
             },
             "development": {
-              "buildTarget": "chatbot-ui:build:development"
+              "buildTarget": "ai-services-console:build:development"
             }
           },
           "defaultConfiguration": "development"

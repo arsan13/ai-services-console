@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChatbotService } from '../../../core/services/chatbot.service';
@@ -18,7 +17,6 @@ const MAX_HISTORY = 20;
   standalone: true,
   imports: [
     FormsModule,
-    NgClass,
     MarkdownModule,
     MatCardModule,
     MatInputModule,

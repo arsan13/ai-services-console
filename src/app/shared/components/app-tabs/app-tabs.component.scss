@@ -1,0 +1,9 @@
+.toolbar-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+a.tab-active {
+  background: rgba(255, 255, 255, 0.2);
+}

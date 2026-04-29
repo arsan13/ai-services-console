@@ -1,12 +1,14 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChatRequest, ChatResponse, Message } from '../../features/chat/message.model';
-import { ApiResponse } from '../api.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatbotService {
+  private apiUrl = `${environment.apiUrl}/ai/chat`;
+
   messages = signal<Message[]>([]);
   loading = signal(false);
 
@@ -25,16 +27,13 @@ export class ChatbotService {
     this.messages.update((m) => [...m, userMessage]);
 
     const body: ChatRequest = { message };
-    this.http.post<ApiResponse<ChatResponse>>(`http://localhost:8080/api/ai/chat`, body).subscribe({
-      next: (res: ApiResponse<ChatResponse>) => {
-        this.handleResponse(res.data?.content);
+    this.http.post<ChatResponse>(`${this.apiUrl}`, body).subscribe({
+      next: (res: ChatResponse) => {
+        this.handleResponse(res.content);
       },
       error: (err: HttpErrorResponse) => {
         console.error(err);
-        const msg =
-          err.error?.message ??
-          err.message ??
-          'Something went wrong';
+        const msg = err.message ?? 'Something went wrong';
         this.handleResponse(msg);
       },
       complete: () => {
