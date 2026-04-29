@@ -1,5 +1,11 @@
 <mat-toolbar color="primary" class="toolbar">
-  <span>AI Console</span>
+  <div class="toolbar-left">
+    <a class="brand" routerLink="/">AI Console</a>
+
+    @if (isLoggedIn) {
+      <app-tabs />
+    }
+  </div>
 
   <app-user-menu />
 </mat-toolbar>

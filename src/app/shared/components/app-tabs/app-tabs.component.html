@@ -1,0 +1,12 @@
+<nav class="toolbar-tabs" aria-label="Primary navigation tabs">
+  @for (tab of tabs; track tab.route) {
+    <a
+      mat-button
+      [routerLink]="tab.route"
+      routerLinkActive="tab-active"
+      [routerLinkActiveOptions]="{ exact: tab.exact ?? true }"
+    >
+      {{ tab.label }}
+    </a>
+  }
+</nav>

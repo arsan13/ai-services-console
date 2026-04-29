@@ -9,6 +9,18 @@
   justify-content: space-between;
 }
 
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+}
+
 .toolbar-actions {
   display: flex;
   align-items: center;
