@@ -5,10 +5,33 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, map, throwError } from 'rxjs';
 import { ApiResponse } from '../models/api.model';
 
+type ResolvedError = {
+  message: string;
+  status?: number;
+};
+
 class ApiWrappedError extends Error {
   constructor(message: string, public readonly status?: number) {
     super(message);
   }
+}
+
+function isApiResponseBody(body: unknown): body is ApiResponse<unknown> {
+  return !!body && typeof body === 'object' && 'success' in body;
+}
+
+function unwrapApiResponse(event: HttpResponse<unknown>): HttpResponse<unknown> {
+  const body = event.body;
+
+  if (!isApiResponseBody(body)) {
+    return event;
+  }
+
+  if (!body.success) {
+    throw new ApiWrappedError(body.message ?? 'Request failed', event.status);
+  }
+
+  return event.clone({ body: body.data });
 }
 
 function resolveBackendMessage(errorBody: unknown): string | null {
@@ -40,40 +63,36 @@ function showErrorSnackbar(snackBar: MatSnackBar, message: string, status?: numb
   });
 }
 
+function resolveError(err: unknown): ResolvedError {
+  if (err instanceof HttpErrorResponse) {
+    return {
+      status: err.status,
+      message: resolveBackendMessage(err.error) ?? err.message
+    };
+  }
+
+  if (err instanceof ApiWrappedError) {
+    return {
+      status: err.status,
+      message: err.message
+    };
+  }
+
+  if (err instanceof Error) {
+    return { message: err.message };
+  }
+
+  return { message: 'An unexpected error occurred' };
+}
+
 export const apiResponseInterceptor: HttpInterceptorFn = (req, next) => {
   const platformId = inject(PLATFORM_ID);
   const snackBar = inject(MatSnackBar);
 
   return next(req).pipe(
-    map(event => {
-      if (event instanceof HttpResponse) {
-        const body = event.body;
-        if (body && typeof body === 'object' && 'success' in body) {
-          const apiResponse = body as ApiResponse<unknown>;
-          if (!apiResponse.success) {
-            throw new ApiWrappedError(
-              apiResponse.message ?? 'Request failed',
-              event.status
-            );
-          }
-          return event.clone({ body: apiResponse.data });
-        }
-      }
-      return event;
-    }),
+    map(event => event instanceof HttpResponse ? unwrapApiResponse(event) : event),
     catchError((err: unknown) => {
-      let message = 'An unexpected error occurred';
-      let status: number | undefined;
-
-      if (err instanceof HttpErrorResponse) {
-        status = err.status;
-        message = resolveBackendMessage(err.error) ?? err.message;
-      } else if (err instanceof ApiWrappedError) {
-        status = err.status;
-        message = err.message;
-      } else if (err instanceof Error) {
-        message = err.message;
-      }
+      const { message, status } = resolveError(err);
 
       if (isPlatformBrowser(platformId)) {
         showErrorSnackbar(snackBar, message, status);
