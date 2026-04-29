@@ -1,5 +1,5 @@
 {
-  "name": "chatbot-ui",
+  "name": "ai-services-console",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:chatbot-ui": "node dist/chatbot-ui/server/server.mjs"
+    "serve:ssr:ai-services-console": "node dist/ai-services-console/server/server.mjs"
   },
   "private": true,
   "packageManager": "npm@10.9.4",

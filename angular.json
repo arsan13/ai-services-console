@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "chatbot-ui": {
+    "ai-services-console": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -79,10 +79,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "chatbot-ui:build:production"
+              "buildTarget": "ai-services-console:build:production"
             },
             "development": {
-              "buildTarget": "chatbot-ui:build:development"
+              "buildTarget": "ai-services-console:build:development"
             }
           },
           "defaultConfiguration": "development"
