@@ -1,11 +1,11 @@
 :host {
 	display: block;
-	min-height: 100dvh;
+	min-height: calc(100dvh - 64px);
 }
 
 .auth-shell {
 	position: relative;
-	min-height: 100dvh;
+	min-height: calc(100dvh - 64px);
 	box-sizing: border-box;
 	display: grid;
 	place-items: center;

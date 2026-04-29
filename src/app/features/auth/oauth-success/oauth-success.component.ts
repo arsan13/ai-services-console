@@ -3,6 +3,7 @@ import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-oauth-success',
@@ -33,9 +34,14 @@ export class OauthSuccessComponent implements OnInit {
       return;
     }
 
-    this.authService.saveToken(token);
-    this.message = 'Login successful. Redirecting...';
-    void this.router.navigate(['/chat'], { replaceUrl: true });
+    this.message = 'Loading your profile...';
+
+    this.authService.completeOauth2Login(token)
+      .pipe(finalize(() => {
+        this.message = 'Login successful. Redirecting...';
+        void this.router.navigate(['/chat'], { replaceUrl: true });
+      }))
+      .subscribe();
   }
 
   private showError(message: string): void {

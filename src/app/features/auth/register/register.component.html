@@ -7,30 +7,60 @@
     <h2>Create Account</h2>
     <p class="subtitle">Set up your profile and start chatting in seconds.</p>
 
-    <form class="auth-form" (ngSubmit)="onSubmit()">
+    <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
       <mat-form-field class="field" appearance="outline">
         <mat-label>Full Name</mat-label>
-        <input matInput [(ngModel)]="fullname" name="fullname" [disabled]="isLoading" required />
+        <input matInput formControlName="fullname" />
+        @if ((form.controls.fullname.touched || form.controls.fullname.dirty) && form.controls.fullname.hasError('required')) {
+          <mat-error>Full name is required.</mat-error>
+        } @else if ((form.controls.fullname.touched || form.controls.fullname.dirty) && form.controls.fullname.hasError('minlength')) {
+          <mat-error>Full name must be at least 2 characters.</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field class="field" appearance="outline">
         <mat-label>Username or Email</mat-label>
-        <input matInput [(ngModel)]="username" name="username" [disabled]="isLoading" required />
+        <input matInput formControlName="username" />
+        @if ((form.controls.username.touched || form.controls.username.dirty) && form.controls.username.hasError('required')) {
+          <mat-error>Username or email is required.</mat-error>
+        } @else if ((form.controls.username.touched || form.controls.username.dirty) && form.controls.username.hasError('minlength')) {
+          <mat-error>Please enter at least 3 characters.</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field class="field" appearance="outline">
         <mat-label>Password</mat-label>
-        <input matInput type="password" [(ngModel)]="password" name="password" [disabled]="isLoading" required />
-        @if (isLoading) {
-          <mat-spinner matSuffix diameter="16"></mat-spinner>
+        <input matInput type="password" formControlName="password" />
+        @if ((form.controls.password.touched || form.controls.password.dirty) && form.controls.password.hasError('required')) {
+          <mat-error>Password is required.</mat-error>
+        } @else if ((form.controls.password.touched || form.controls.password.dirty) && form.controls.password.hasError('minlength')) {
+          <mat-error>Password must be at least 6 characters.</mat-error>
         }
       </mat-form-field>
 
-      <button class="submit-btn" mat-flat-button color="primary" [disabled]="isLoading">Register</button>
+      <mat-form-field class="field" appearance="outline">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput type="password" formControlName="confirmPassword" />
+        @if ((form.controls.confirmPassword.touched || form.controls.confirmPassword.dirty) && form.controls.confirmPassword.hasError('required')) {
+          <mat-error>Confirm password is required.</mat-error>
+        } @else if ((form.controls.confirmPassword.touched || form.controls.confirmPassword.dirty) && form.controls.confirmPassword.hasError('minlength')) {
+          <mat-error>Confirm password must be at least 6 characters.</mat-error>
+        } @else if ((form.controls.confirmPassword.touched || form.controls.confirmPassword.dirty || form.controls.password.touched || form.controls.password.dirty) && form.controls.confirmPassword.hasError('passwordMismatch')) {
+          <mat-error>Passwords do not match.</mat-error>
+        }
+      </mat-form-field>
+
+      <button class="submit-btn" type="submit" mat-flat-button color="primary" [disabled]="isLoading()">
+        @if (isLoading()) {
+          <mat-spinner diameter="16"></mat-spinner>
+        } @else {
+          <span>Register</span>
+        }
+      </button>
     </form>
 
     <div class="alt-actions">
-      <button mat-stroked-button (click)="login()" [disabled]="isLoading">Already have an account? Login</button>
+      <button mat-stroked-button (click)="login()" [disabled]="isLoading()">Already have an account? Login</button>
     </div>
   </mat-card>
 </section>

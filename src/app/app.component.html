@@ -1,9 +1,7 @@
 <mat-toolbar color="primary" class="toolbar">
   <span>Airops Assistant</span>
 
-  @if (auth.isLoggedIn()) {
-    <button mat-button (click)="logout()">Logout</button>
-  }
+  <app-user-menu />
 </mat-toolbar>
 
 <router-outlet></router-outlet>

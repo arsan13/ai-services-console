@@ -1,23 +1,19 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { AuthService } from './core/services/auth.service';
-import { MatButtonModule } from '@angular/material/button';
+import { UserMenuComponent } from './shared/components/user-menu/user-menu.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, MatToolbarModule, MatButtonModule],
+  imports: [RouterOutlet, MatToolbarModule, UserMenuComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  protected readonly title = signal('chatbot-ui');
+  private readonly auth = inject(AuthService);
 
-  protected readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
-
-  logout () {
-    this.auth.logout();
-    this.router.navigate(['/login']);
+  constructor() {
+    this.auth.initializeUser().subscribe();
   }
 }
