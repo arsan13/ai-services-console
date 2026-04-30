@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class ChatbotStreamService {
+  // Stream API not available as of now.
   private apiUrl = `${environment.apiUrl}/ai/stream`;
 
   messages = signal<Message[]>([]);

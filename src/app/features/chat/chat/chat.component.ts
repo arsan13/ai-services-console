@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChatbotService } from '../../../core/services/chatbot.service';
 
@@ -34,7 +34,21 @@ export class ChatComponent {
   history: string[] = [];
   historyIndex: number = -1;
 
-  constructor(public chatService: ChatbotService) {}
+  @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
+
+  constructor(public chatService: ChatbotService) {
+    effect(() => {
+      // Watch messages signal and scroll to bottom when messages change
+      this.chatService.messages();
+      setTimeout(() => this.scrollToBottom(), 0);
+    });
+  }
+
+  scrollToBottom(): void {
+    if (this.messagesContainer) {
+      this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+    }
+  }
 
   send() {
     const trimmedMsg = this.message.trim();
