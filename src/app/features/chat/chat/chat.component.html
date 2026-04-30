@@ -11,6 +11,10 @@
       <div class="header-actions">
         @if (chatService.loading()) {
           <mat-progress-spinner diameter="24" mode="indeterminate" color="primary" aria-label="Loading response"></mat-progress-spinner>
+          <button mat-button (click)="chatService.stopMessage()" aria-label="Stop request">
+            <mat-icon>stop_circle</mat-icon>
+            Stop
+          </button>
         } @else if (chatService.messages().length > 0) {
           <button mat-button (click)="deleteConversation()" aria-label="Clear conversation">
             <mat-icon>delete_outline</mat-icon>

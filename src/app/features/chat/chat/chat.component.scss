@@ -120,6 +120,12 @@
   border-bottom: 1px solid rgba(22, 55, 79, 0.08);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .eyebrow {
   margin: 0;
   text-transform: uppercase;

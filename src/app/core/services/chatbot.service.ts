@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Subject, takeUntil } from 'rxjs';
 import { ChatRequest, ChatResponse, Message } from '../../features/chat/message.model';
 import { environment } from '../../../environments/environment';
 
@@ -8,11 +9,17 @@ import { environment } from '../../../environments/environment';
 })
 export class ChatbotService {
   private apiUrl = `${environment.apiUrl}/ai/chat`;
+  private readonly http = inject(HttpClient);
 
   messages = signal<Message[]>([]);
   loading = signal(false);
 
-  constructor(private http: HttpClient) {}
+  private cancelRequest$ = new Subject<void>();
+
+  stopMessage() {
+    this.cancelRequest$.next();
+    this.loading.set(false);
+  }
 
   sendMessage(message: string) {
     this.loading.set(true);
@@ -27,7 +34,9 @@ export class ChatbotService {
     this.messages.update((m) => [...m, userMessage]);
 
     const body: ChatRequest = { message };
-    this.http.post<ChatResponse>(`${this.apiUrl}`, body).subscribe({
+    this.http.post<ChatResponse>(`${this.apiUrl}?type=aviation`, body).pipe(
+      takeUntil(this.cancelRequest$)
+    ).subscribe({
       next: (res: ChatResponse) => {
         this.handleResponse(res.content);
       },
