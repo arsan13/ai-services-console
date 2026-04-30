@@ -42,6 +42,14 @@ export class ChatbotService {
     });
   }
 
+  deleteConversation() {
+    return this.http.delete(`${this.apiUrl}/conversation?type=aviation`);
+  }
+
+  clearMessages() {
+    this.messages.set([]);
+  }
+
   private handleResponse(content: string | undefined) {
     const botMessage: Message = {
       id: crypto.randomUUID(),
@@ -51,6 +59,4 @@ export class ChatbotService {
     };
     this.messages.update((m) => [...m, botMessage]);
   }
-
-
 }

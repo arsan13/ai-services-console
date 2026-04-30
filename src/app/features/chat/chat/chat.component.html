@@ -8,9 +8,17 @@
         <p class="eyebrow">AI Assistant</p>
         <h2>Conversation</h2>
       </div>
-      @if (chatService.loading()) {
-        <mat-progress-spinner diameter="24" mode="indeterminate" color="primary" aria-label="Loading response"></mat-progress-spinner>
-      }
+      <div class="header-actions">
+        @if (chatService.loading()) {
+          <mat-progress-spinner diameter="24" mode="indeterminate" color="primary" aria-label="Loading response"></mat-progress-spinner>
+        }
+        @if (chatService.messages().length > 0) {
+          <button mat-button (click)="deleteConversation()" [disabled]="chatService.loading()" aria-label="Clear conversation">
+            <mat-icon>delete_outline</mat-icon>
+            Clear conversation
+          </button>
+        }
+      </div>
     </header>
 
     <div class="messages" #messagesContainer role="log" aria-label="Chat messages" aria-live="polite">

@@ -55,6 +55,17 @@ export class ChatComponent {
     }
   }
 
+  deleteConversation() {
+    this.chatService.deleteConversation().subscribe({
+      next: () => {
+        this.chatService.clearMessages();
+        this.message = '';
+        this.history = [];
+        this.historyIndex = -1;
+      }
+    });
+  }
+
   send() {
     const trimmedMsg = this.message.trim();
     if (!trimmedMsg) {
