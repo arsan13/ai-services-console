@@ -11,11 +11,13 @@ export class ChatbotService {
 
   messages = signal<Message[]>([]);
   loading = signal(false);
+  error = signal<string | null>(null);
 
   constructor(private http: HttpClient) {}
 
   sendMessage(message: string) {
     this.loading.set(true);
+    this.error.set(null);
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
@@ -33,8 +35,9 @@ export class ChatbotService {
       },
       error: (err: HttpErrorResponse) => {
         console.error(err);
-        const msg = err.message ?? 'Something went wrong';
-        this.handleResponse(msg);
+        const errorMsg = err.message ?? 'Something went wrong';
+        this.error.set(errorMsg);
+        this.handleResponse(errorMsg);
       },
       complete: () => {
         this.loading.set(false);
@@ -50,6 +53,9 @@ export class ChatbotService {
       timestamp: new Date(),
     };
     this.messages.update((m) => [...m, botMessage]);
-    this.loading.set(false);
+  }
+
+  clearError() {
+    this.error.set(null);
   }
 }
