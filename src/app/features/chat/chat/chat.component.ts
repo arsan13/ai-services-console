@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef, effect, ChangeDetectionStrategy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { ChatbotService } from '../../../core/services/chatbot.service';
 
 import { MarkdownModule } from 'ngx-markdown';
@@ -17,6 +18,7 @@ const MAX_HISTORY = 20;
   standalone: true,
   imports: [
     FormsModule,
+    DatePipe,
     MarkdownModule,
     MatCardModule,
     MatInputModule,
@@ -27,6 +29,7 @@ const MAX_HISTORY = 20;
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatComponent {
   message: string = '';
@@ -34,7 +37,23 @@ export class ChatComponent {
   history: string[] = [];
   historyIndex: number = -1;
 
-  constructor(public chatService: ChatbotService) {}
+  @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
+
+  chatService = inject(ChatbotService);
+
+  constructor() {
+    effect(() => {
+      // Watch messages signal and scroll to bottom when messages change
+      this.chatService.messages();
+      setTimeout(() => this.scrollToBottom(), 0);
+    });
+  }
+
+  scrollToBottom(): void {
+    if (this.messagesContainer) {
+      this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+    }
+  }
 
   send() {
     const trimmedMsg = this.message.trim();
