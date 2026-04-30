@@ -5,6 +5,10 @@ import { inject, PLATFORM_ID } from '@angular/core';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const platformId = inject(PLATFORM_ID);
 
+  if (req.url.includes('/auth/')) {
+    return next(req);
+  }
+
   let token: string | null = null;
 
   if (isPlatformBrowser(platformId)) {

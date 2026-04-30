@@ -12,9 +12,14 @@ export class UserService {
   private readonly currentUserSignal = signal<UserProfile | null>(null);
   readonly currentUser = this.currentUserSignal.asReadonly();
 
-  load(): Observable<UserProfile | null> {
+  verifySession(): Observable<UserProfile> {
     return this.http.get<UserProfile>(this.meUrl).pipe(
-      tap(user => this.currentUserSignal.set(user)),
+      tap(user => this.currentUserSignal.set(user))
+    );
+  }
+
+  load(): Observable<UserProfile | null> {
+    return this.verifySession().pipe(
       catchError(() => {
         this.currentUserSignal.set(null);
         return of(null);

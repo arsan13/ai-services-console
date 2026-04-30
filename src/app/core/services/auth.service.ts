@@ -1,6 +1,6 @@
-import { Observable, of, tap } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
+import { catchError, finalize, Observable, of, shareReplay, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { AuthResponse, LoginPayload, RegisterPayload, UserProfile } from '../models/auth.model';
@@ -15,6 +15,7 @@ export class AuthService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly authApiUrl = `${environment.apiUrl}/auth`;
   private readonly userService = inject(UserService);
+  private initializeUserRequest$: Observable<UserProfile | null> | null = null;
 
   login(payload: LoginPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.authApiUrl}/login`, payload).pipe(
@@ -43,8 +44,24 @@ export class AuthService {
       return of(this.userService.currentUser());
     }
 
+    // Reuse in-flight /me call so app shell and guards do not trigger duplicate checks.
+    if (this.initializeUserRequest$) {
+      return this.initializeUserRequest$;
+    }
+
     // Token in localStorage but no in-memory user → app was reloaded, rehydrate via /me
-    return this.userService.load();
+    this.initializeUserRequest$ = this.userService.verifySession().pipe(
+      catchError(() => {
+        this.userService.clear();
+        return of(null);
+      }),
+      finalize(() => {
+        this.initializeUserRequest$ = null;
+      }),
+      shareReplay(1)
+    );
+
+    return this.initializeUserRequest$;
   }
 
   completeOauth2Login(token: string): Observable<UserProfile | null> {

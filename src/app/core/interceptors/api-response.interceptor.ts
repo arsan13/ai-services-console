@@ -1,9 +1,11 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse, HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { inject, PLATFORM_ID } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, map, throwError } from 'rxjs';
 import { ApiResponse } from '../models/api.model';
+import { AuthService } from '../services/auth.service';
 
 type ResolvedError = {
   message: string;
@@ -88,11 +90,19 @@ function resolveError(err: unknown): ResolvedError {
 export const apiResponseInterceptor: HttpInterceptorFn = (req, next) => {
   const platformId = inject(PLATFORM_ID);
   const snackBar = inject(MatSnackBar);
+  const auth = inject(AuthService);
+  const router = inject(Router);
 
   return next(req).pipe(
     map(event => event instanceof HttpResponse ? unwrapApiResponse(event) : event),
     catchError((err: unknown) => {
       const { message, status } = resolveError(err);
+
+      if (status === 401) {
+        auth.logout();
+        router.navigate(['/login']);
+        return throwError(() => new Error(message));
+      }
 
       if (isPlatformBrowser(platformId)) {
         showErrorSnackbar(snackBar, message, status);

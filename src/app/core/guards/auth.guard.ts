@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from "@angular/common";
 import { inject, Injectable, PLATFORM_ID } from "@angular/core";
-import { CanActivate, Router } from "@angular/router";
+import { CanActivate, Router, UrlTree } from "@angular/router";
+import { map, Observable } from "rxjs";
 import { AuthService } from "../services/auth.service";
 
 @Injectable({ providedIn: 'root' })
@@ -8,16 +9,22 @@ export class AuthGuard implements CanActivate {
 
   private platformId = inject(PLATFORM_ID);
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router
+  ) {}
 
-  canActivate(): boolean {
+  canActivate(): boolean | UrlTree | Observable<boolean | UrlTree> {
     if (!isPlatformBrowser(this.platformId)) {
       return true;
     }
+
     if (!this.auth.isLoggedIn()) {
-      this.router.navigate(['/login']);
-      return false;
+      return this.router.createUrlTree(['/login']);
     }
-    return true;
+
+    return this.auth.initializeUser().pipe(
+      map(user => (user ? true : this.router.createUrlTree(['/login'])))
+    );
   }
 }

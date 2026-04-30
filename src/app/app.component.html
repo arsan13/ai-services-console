@@ -2,12 +2,14 @@
   <div class="toolbar-left">
     <a class="brand" routerLink="/">AI Console</a>
 
-    @if (isLoggedIn) {
+    @if (currentUser; as user) {
       <app-tabs />
     }
   </div>
 
-  <app-user-menu />
+  @if (currentUser; as user) {
+    <app-user-menu [user]="user" />
+  }
 </mat-toolbar>
 
 <router-outlet></router-outlet>
