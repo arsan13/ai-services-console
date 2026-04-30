@@ -13,19 +13,6 @@
       }
     </header>
 
-    @if (chatService.error()) {
-      <div class="error-alert" role="alert" aria-live="polite">
-        <mat-icon>error_outline</mat-icon>
-        <div class="error-content">
-          <p class="error-title">Error</p>
-          <p class="error-message">{{ chatService.error() }}</p>
-        </div>
-        <button mat-icon-button (click)="chatService.clearError()" aria-label="Close error message">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-    }
-
     <div class="messages" #messagesContainer role="log" aria-label="Chat messages" aria-live="polite">
       @if (chatService.messages().length === 0) {
         <div class="empty-state">
