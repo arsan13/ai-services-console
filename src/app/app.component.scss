@@ -1,24 +1,33 @@
 :host {
   display: block;
   min-height: 100dvh;
-  background: #fafafa;
+  background: var(--mat-sys-surface);
 }
 
 .toolbar {
   display: flex;
   justify-content: space-between;
+  gap: 8px;
 }
 
 .toolbar-left {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .brand {
   color: inherit;
   font-weight: 600;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .toolbar-actions {
@@ -41,8 +50,30 @@
   font-weight: 600;
   letter-spacing: 0.4px;
   text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-on-primary) 45%, transparent);
   border-radius: 999px;
   padding: 2px 8px;
   line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    padding-inline: 8px;
+  }
+
+  .toolbar-left {
+    gap: 8px;
+    flex: 1;
+  }
+
+  .toolbar-right {
+    gap: 0;
+  }
+
+  .brand {
+    font-size: 0.95rem;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

@@ -1,5 +1,5 @@
 .oauth-success-wrapper {
-  min-height: 100dvh;
+  min-height: calc(100dvh - 64px);
   display: grid;
   place-items: center;
   padding: 1rem;
@@ -9,4 +9,10 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .oauth-success-wrapper {
+    min-height: calc(100dvh - 56px);
+  }
 }

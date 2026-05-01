@@ -5,6 +5,15 @@
 }
 
 .chat-shell {
+  --chat-bg-a: color-mix(in srgb, var(--mat-sys-primary-container) 28%, var(--mat-sys-surface));
+  --chat-bg-b: color-mix(in srgb, var(--mat-sys-secondary-container) 22%, var(--mat-sys-surface));
+  --chat-bg-c: color-mix(in srgb, var(--mat-sys-tertiary-container) 18%, var(--mat-sys-surface));
+  --chat-orb-primary: color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  --chat-orb-tertiary: color-mix(in srgb, var(--mat-sys-tertiary) 28%, transparent);
+  --chat-card-border: color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+  --chat-card-shadow: color-mix(in srgb, var(--mat-sys-shadow) 18%, transparent);
+  --chat-muted-text: color-mix(in srgb, var(--mat-sys-on-surface-variant) 88%, transparent);
+
   position: relative;
   height: 100%;
   min-height: 0;
@@ -13,7 +22,7 @@
   place-items: center;
   padding: 1.2rem;
   overflow: hidden;
-  background: linear-gradient(150deg, #f5fbff 0%, #edf6ff 45%, #fff8ef 100%);
+  background: linear-gradient(150deg, var(--chat-bg-a) 0%, var(--chat-bg-b) 45%, var(--chat-bg-c) 100%);
 }
 
 .bg-orb {
@@ -28,7 +37,7 @@
   height: 380px;
   top: -120px;
   left: -110px;
-  background: radial-gradient(circle at 30% 30%, #9fe3ff 0%, rgba(159, 227, 255, 0.2) 70%, transparent 100%);
+  background: radial-gradient(circle at 30% 30%, var(--chat-orb-primary) 0%, color-mix(in srgb, var(--chat-orb-primary) 45%, transparent) 70%, transparent 100%);
 }
 
 .orb-b {
@@ -36,7 +45,7 @@
   height: 360px;
   bottom: -130px;
   right: -120px;
-  background: radial-gradient(circle at 70% 70%, #ffd8af 0%, rgba(255, 216, 175, 0.2) 70%, transparent 100%);
+  background: radial-gradient(circle at 70% 70%, var(--chat-orb-tertiary) 0%, color-mix(in srgb, var(--chat-orb-tertiary) 45%, transparent) 70%, transparent 100%);
 }
 
 .chat-card {
@@ -51,8 +60,9 @@
     "messages"
     "input";
   border-radius: 22px;
-  border: 1px solid rgba(16, 42, 65, 0.08);
-  box-shadow: 0 24px 50px rgba(14, 35, 53, 0.12);
+  border: 1px solid var(--chat-card-border);
+  box-shadow: 0 24px 50px var(--chat-card-shadow);
+  background: var(--mat-sys-surface-container-low);
   padding: 0.4rem;
   position: relative;
 }
@@ -79,10 +89,10 @@
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.8rem;
-  background-color: #ffebee;
-  border: 1px solid #ef5350;
+  background-color: color-mix(in srgb, var(--mat-sys-error-container) 88%, var(--mat-sys-surface));
+  border: 1px solid color-mix(in srgb, var(--mat-sys-error) 55%, transparent);
   border-radius: 8px;
-  color: #c62828;
+  color: var(--mat-sys-on-error-container);
 
   mat-icon {
     flex-shrink: 0;
@@ -117,7 +127,26 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1rem 0.65rem;
-  border-bottom: 1px solid rgba(22, 55, 79, 0.08);
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 24%, transparent);
+  gap: 1rem;
+}
+
+.title-wrap {
+  min-width: 0;
+  flex: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.heading-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
 }
 
 .eyebrow {
@@ -126,13 +155,35 @@
   letter-spacing: 0.08em;
   font-size: 0.7rem;
   font-weight: 700;
-  color: #4b6d86;
+  color: var(--chat-muted-text);
+}
+
+.chat-type-field {
+  margin-top: 0.15rem;
+  width: min(260px, 100%);
+  flex: 0 1 240px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  ::ng-deep .mat-mdc-form-field-infix {
+    min-height: 40px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+.chat-type-empty {
+  margin: 0.45rem 0 0;
+  color: var(--chat-muted-text);
+  font-size: 0.82rem;
 }
 
 h2 {
-  margin: 0.15rem 0 0;
+  margin: 0;
   font-size: 1.35rem;
-  color: #112c43;
+  color: var(--mat-sys-on-surface);
 }
 
 .messages {
@@ -148,12 +199,12 @@ h2 {
 .empty-state {
   margin: auto;
   text-align: center;
-  color: #5b7489;
+  color: var(--chat-muted-text);
 }
 
 .empty-state h3 {
   margin: 0;
-  color: #24445e;
+  color: var(--mat-sys-on-surface);
 }
 
 .empty-state p {
@@ -226,9 +277,9 @@ h2 {
 }
 
 .bot {
-  background: #f0f5f9;
-  color: #173044;
-  border: 1px solid rgba(21, 53, 75, 0.08);
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 28%, transparent);
   border-bottom-left-radius: 4px;
 }
 
@@ -242,6 +293,51 @@ h2 {
 
 .input {
   width: 100%;
+}
+
+.submit-action-btn {
+  position: relative;
+  overflow: hidden;
+  transition: background-color 180ms ease, box-shadow 180ms ease, transform 120ms ease;
+}
+
+.submit-action-btn.stop-mode {
+  color: var(--mat-sys-on-primary-container);
+  background-color: var(--mat-sys-primary-container);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--mat-sys-primary) 28%, transparent);
+}
+
+.fab-loader-wrap {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fab-loader-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-top-color: currentColor;
+  animation: fab-spin 0.9s linear infinite;
+}
+
+.fab-stop-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+}
+
+@keyframes fab-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {
@@ -261,7 +357,24 @@ h2 {
     border-radius: 16px;
   }
 
+  .chat-header {
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    margin-top: 0.1rem;
+  }
+
+  .heading-row {
+    align-items: flex-start;
+  }
+
   .message {
     max-width: 88%;
+  }
+
+  .chat-type-field {
+    width: 100%;
+    flex-basis: 100%;
   }
 }

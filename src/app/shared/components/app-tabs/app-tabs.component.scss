@@ -5,5 +5,5 @@
 }
 
 a.tab-active {
-  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, var(--mat-sys-on-primary) 22%, transparent);
 }

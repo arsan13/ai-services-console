@@ -12,6 +12,17 @@
   }
 }
 
+@media (max-width: 768px) {
+  .user-trigger {
+    min-width: auto;
+    padding-inline: 6px;
+
+    .trigger-name {
+      display: none;
+    }
+  }
+}
+
 .menu-header {
   padding: 12px 16px 8px;
   cursor: default;
@@ -25,7 +36,7 @@
   .menu-username {
     margin: 2px 0 0;
     font-size: 12px;
-    color: rgba(0, 0, 0, 0.54);
+    color: color-mix(in srgb, var(--mat-sys-on-surface) 62%, transparent);
   }
 }
 
@@ -35,7 +46,7 @@
   font-weight: 600;
   letter-spacing: 0.4px;
   text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.38);
+  color: color-mix(in srgb, var(--mat-sys-on-surface) 46%, transparent);
   cursor: default;
 }
 
@@ -50,7 +61,7 @@
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 999px;
-  background: #e8f0fe;
-  color: #1a73e8;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
   letter-spacing: 0.4px;
 }

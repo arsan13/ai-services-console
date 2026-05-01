@@ -2,6 +2,8 @@ import { Component, ViewChild, ElementRef, effect, ChangeDetectionStrategy, inje
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { ChatbotService } from '../../../core/services/chatbot.service';
+import { ChatTypeService } from '../../../core/services/chat-type.service';
+import { ChatTypeCode } from '../../../core/models/chat-type.model';
 
 import { MarkdownModule } from 'ngx-markdown';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,7 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 
 const MAX_HISTORY = 20;
 
@@ -25,7 +27,7 @@ const MAX_HISTORY = 20;
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatProgressBarModule
+    MatSelectModule
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss',
@@ -39,9 +41,12 @@ export class ChatComponent {
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
 
-  chatService = inject(ChatbotService);
+  readonly chatService = inject(ChatbotService);
+  readonly chatTypeService = inject(ChatTypeService);
 
   constructor() {
+    this.chatTypeService.load();
+
     effect(() => {
       // Watch messages signal and scroll to bottom when messages change
       this.chatService.messages();
@@ -55,8 +60,36 @@ export class ChatComponent {
     }
   }
 
+  deleteConversation() {
+    const selectedChatType = this.chatTypeService.selectedChatType();
+    if (!selectedChatType) {
+      return;
+    }
+
+    this.chatService.deleteConversation(selectedChatType.code).subscribe({
+      next: () => {
+        this.chatService.clearMessages();
+        this.message = '';
+        this.history = [];
+        this.historyIndex = -1;
+      }
+    });
+  }
+
+  onChatTypeChange(code: ChatTypeCode): void {
+    this.chatTypeService.selectChatType(code);
+    this.chatService.clearMessages();
+    this.message = '';
+  }
+
   send() {
     const trimmedMsg = this.message.trim();
+    const selectedChatType = this.chatTypeService.selectedChatType();
+
+    if (!selectedChatType) {
+      return;
+    }
+
     if (!trimmedMsg) {
       return;
     };
@@ -68,7 +101,7 @@ export class ChatComponent {
       this.history.pop();
     }
 
-    this.chatService.sendMessage(trimmedMsg);
+    this.chatService.sendMessage(trimmedMsg, selectedChatType.code);
 
     this.historyIndex = -1;
     this.message = '';

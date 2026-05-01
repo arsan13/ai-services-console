@@ -6,28 +6,47 @@
     <header class="chat-header">
       <div class="title-wrap">
         <p class="eyebrow">AI Assistant</p>
-        <h2>Conversation</h2>
+        <div class="heading-row">
+          <h2>Conversation</h2>
+
+          @if (chatTypeService.allowedChatTypes().length > 0) {
+            <mat-form-field appearance="outline" class="chat-type-field" subscriptSizing="dynamic">
+              <mat-label>Chat type</mat-label>
+              <mat-select
+                [value]="chatTypeService.selectedChatTypeCode()"
+                [disabled]="chatService.loading()"
+                (valueChange)="onChatTypeChange($event)"
+                aria-label="Select chat type"
+              >
+                @for (chatType of chatTypeService.allowedChatTypes(); track chatType.code) {
+                  <mat-option [value]="chatType.code">{{ chatType.displayName }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+        </div>
+
+        @if (chatTypeService.allowedChatTypes().length === 0 && !chatTypeService.loading()) {
+          <p class="chat-type-empty">No chat type available for your permissions.</p>
+        }
       </div>
-      @if (chatService.loading()) {
-        <mat-progress-spinner diameter="24" mode="indeterminate" color="primary" aria-label="Loading response"></mat-progress-spinner>
-      }
+      <div class="header-actions">
+        @if (chatService.messages().length > 0 && chatTypeService.selectedChatType() && !chatService.loading()) {
+          <button mat-button (click)="deleteConversation()" aria-label="Clear conversation">
+            <mat-icon>delete_outline</mat-icon>
+            Clear conversation
+          </button>
+        }
+      </div>
     </header>
 
-    @if (chatService.error()) {
-      <div class="error-alert" role="alert" aria-live="polite">
-        <mat-icon>error_outline</mat-icon>
-        <div class="error-content">
-          <p class="error-title">Error</p>
-          <p class="error-message">{{ chatService.error() }}</p>
-        </div>
-        <button mat-icon-button (click)="chatService.clearError()" aria-label="Close error message">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-    }
-
     <div class="messages" #messagesContainer role="log" aria-label="Chat messages" aria-live="polite">
-      @if (chatService.messages().length === 0) {
+      @if (chatTypeService.allowedChatTypes().length === 0 && !chatTypeService.loading()) {
+        <div class="empty-state">
+          <h3>No chat access</h3>
+          <p>Your account does not currently have permission to use any chat type.</p>
+        </div>
+      } @else if (chatService.messages().length === 0) {
         <div class="empty-state">
           <h3>Start the conversation</h3>
           <p>Ask anything to get an instant AI response.</p>
@@ -63,22 +82,31 @@
         <input
           matInput
           [(ngModel)]="message"
-          [disabled]="chatService.loading()"
+          [disabled]="chatService.loading() || !chatTypeService.selectedChatType()"
           (keyup.enter)="send()"
           (keydown)="handleKey($event)"
           aria-label="Chat input"
-          [attr.aria-disabled]="chatService.loading()"
+          [attr.aria-disabled]="chatService.loading() || !chatTypeService.selectedChatType()"
         />
       </mat-form-field>
 
-      <button 
+      <button
         mat-fab 
         color="primary" 
-        (click)="send()" 
-        [disabled]="chatService.loading() || message.trim().length < 1"
-        aria-label="Send message"
+        class="submit-action-btn"
+        [class.stop-mode]="chatService.loading()"
+        (click)="chatService.loading() ? chatService.stopMessage() : send()"
+        [disabled]="!chatService.loading() && (message.trim().length < 1 || !chatTypeService.selectedChatType())"
+        [attr.aria-label]="chatService.loading() ? 'Stop response' : 'Send message'"
       >
-        <mat-icon>send</mat-icon>
+        @if (chatService.loading()) {
+          <span class="fab-loader-wrap" aria-hidden="true">
+            <span class="fab-loader-ring"></span>
+            <mat-icon class="fab-stop-icon">stop</mat-icon>
+          </span>
+        } @else {
+          <mat-icon>send</mat-icon>
+        }
       </button>
     </div>
   </mat-card>

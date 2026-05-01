@@ -2,45 +2,76 @@
   <div class="bg-orb orb-a"></div>
   <div class="bg-orb orb-b"></div>
 
-  <mat-card class="auth-card">
-    <p class="eyebrow">Welcome Back</p>
-    <h2>Sign In</h2>
-    <p class="subtitle">Enter your account details to continue your chats.</p>
+  <mat-card class="auth-layout">
+    <aside class="brand-panel">
+      <p class="brand-kicker">AI Services Console</p>
+      <h1>Enterprise AI Workspace</h1>
+      <p class="brand-copy">Secure access to operational chat assistants, role-based tooling, and real-time support workflows.</p>
+      <div class="brand-tags" role="list" aria-label="Platform highlights">
+        <span role="listitem">SSO Ready</span>
+        <span role="listitem">Role-Based Access</span>
+        <span role="listitem">Auditable Sessions</span>
+      </div>
+    </aside>
 
-    <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-      <mat-form-field class="field" appearance="outline">
-        <mat-label>Username or Email</mat-label>
-        <input matInput formControlName="username" />
-        @if ((controls.username.touched || controls.username.dirty) && controls.username.hasError('required')) {
-          <mat-error>Username or email is required.</mat-error>
-        } @else if ((controls.username.touched || controls.username.dirty) && controls.username.hasError('minlength')) {
-          <mat-error>Please enter at least 3 characters.</mat-error>
-        }
-      </mat-form-field>
+    <main class="auth-panel">
+      <p class="eyebrow">Welcome Back</p>
+      <h2>Sign In</h2>
+      <p class="subtitle">Access your account to continue secure conversations.</p>
 
-      <mat-form-field class="field" appearance="outline">
-        <mat-label>Password</mat-label>
-        <input matInput type="password" formControlName="password" />
-        @if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('required')) {
-          <mat-error>Password is required.</mat-error>
-        } @else if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('minlength')) {
-          <mat-error>Password must be at least 6 characters.</mat-error>
-        }
-      </mat-form-field>
+      <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <mat-form-field class="field" appearance="outline">
+          <mat-label>Username or Email</mat-label>
+          <input matInput formControlName="username" />
+          @if ((controls.username.touched || controls.username.dirty) && controls.username.hasError('required')) {
+            <mat-error>Username or email is required.</mat-error>
+          } @else if ((controls.username.touched || controls.username.dirty) && controls.username.hasError('minlength')) {
+            <mat-error>Please enter at least 3 characters.</mat-error>
+          }
+        </mat-form-field>
 
-      <button class="submit-btn" type="submit" mat-flat-button color="primary" [disabled]="isLoading()">
-        @if (isLoading()) {
-          <mat-spinner diameter="16"></mat-spinner>
-        } @else {
-          <span>Login</span>
-        }
-      </button>
-    </form>
+        <mat-form-field class="field" appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" />
+          @if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('required')) {
+            <mat-error>Password is required.</mat-error>
+          } @else if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('minlength')) {
+            <mat-error>Password must be at least 6 characters.</mat-error>
+          }
+        </mat-form-field>
 
-    <div class="alt-actions">
-      <button mat-stroked-button (click)="register()" [disabled]="isLoading()">Create Account</button>
-      <button mat-stroked-button (click)="loginWithGoogle()" [disabled]="isLoading()">Continue with Google</button>
-      <button mat-stroked-button (click)="loginWithGithub()" [disabled]="isLoading()">Continue with GitHub</button>
-    </div>
+        <button class="submit-btn" type="submit" mat-flat-button color="primary" [disabled]="isLoading()">
+          @if (isLoading()) {
+            <mat-spinner diameter="16"></mat-spinner>
+          } @else {
+            <span>Login</span>
+          }
+        </button>
+      </form>
+
+      <div class="divider" role="separator" aria-label="Alternative sign in methods">
+        <span>or continue with</span>
+      </div>
+
+      <div class="oauth-actions">
+        <button class="oauth-btn" mat-stroked-button (click)="loginWithGoogle()" [disabled]="isLoading()" aria-label="Continue with Google">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.2-1.4 3.6-5.5 3.6-3.3 0-6-2.8-6-6.2s2.7-6.2 6-6.2c1.9 0 3.2.8 3.9 1.5l2.7-2.6C16.9 2.7 14.7 1.8 12 1.8 6.5 1.8 2 6.3 2 12s4.5 10.2 10 10.2c5.8 0 9.7-4.1 9.7-9.8 0-.7-.1-1.2-.2-1.8H12z"/>
+          </svg>
+          <span class="oauth-label">Google</span>
+        </button>
+
+        <button class="oauth-btn" mat-stroked-button (click)="loginWithGithub()" [disabled]="isLoading()" aria-label="Continue with GitHub">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M12 2C6.48 2 2 6.59 2 12.25c0 4.52 2.87 8.35 6.84 9.7.5.1.66-.22.66-.49v-1.71c-2.78.62-3.37-1.22-3.37-1.22-.45-1.18-1.11-1.5-1.11-1.5-.9-.64.07-.62.07-.62 1 .07 1.53 1.04 1.53 1.04.88 1.55 2.3 1.1 2.86.84.09-.66.35-1.1.63-1.35-2.22-.26-4.55-1.14-4.55-5.08 0-1.12.39-2.03 1.03-2.74-.1-.26-.45-1.31.1-2.74 0 0 .84-.28 2.75 1.04A9.26 9.26 0 0 1 12 6.9c.85 0 1.7.12 2.5.36 1.9-1.32 2.74-1.04 2.74-1.04.56 1.43.2 2.48.1 2.74.64.71 1.03 1.62 1.03 2.74 0 3.95-2.34 4.82-4.57 5.07.36.32.68.95.68 1.92v2.84c0 .27.16.59.67.49A10.29 10.29 0 0 0 22 12.25C22 6.59 17.52 2 12 2z"/>
+          </svg>
+          <span class="oauth-label">GitHub</span>
+        </button>
+      </div>
+
+      <div class="alt-actions">
+        <button mat-button (click)="register()" [disabled]="isLoading()">Create Account</button>
+      </div>
+    </main>
   </mat-card>
 </section>

@@ -1,9 +1,11 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpErrorResponse, HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { inject, PLATFORM_ID } from '@angular/core';
+import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, map, throwError } from 'rxjs';
 import { ApiResponse } from '../models/api.model';
+import { AuthService } from '../services/auth.service';
 
 type ResolvedError = {
   message: string;
@@ -15,6 +17,8 @@ class ApiWrappedError extends Error {
     super(message);
   }
 }
+
+const SESSION_VALIDATION_PATHS = ['/me'];
 
 function isApiResponseBody(body: unknown): body is ApiResponse<unknown> {
   return !!body && typeof body === 'object' && 'success' in body;
@@ -85,14 +89,30 @@ function resolveError(err: unknown): ResolvedError {
   return { message: 'An unexpected error occurred' };
 }
 
+function shouldLogoutOnUnauthorized(status: number | undefined, requestUrl: string): boolean {
+  if (status !== 401) {
+    return false;
+  }
+
+  return SESSION_VALIDATION_PATHS.some((path) => requestUrl.includes(path));
+}
+
 export const apiResponseInterceptor: HttpInterceptorFn = (req, next) => {
   const platformId = inject(PLATFORM_ID);
   const snackBar = inject(MatSnackBar);
+  const auth = inject(AuthService);
+  const router = inject(Router);
 
   return next(req).pipe(
     map(event => event instanceof HttpResponse ? unwrapApiResponse(event) : event),
     catchError((err: unknown) => {
       const { message, status } = resolveError(err);
+
+      if (shouldLogoutOnUnauthorized(status, req.url)) {
+        auth.logout();
+        router.navigate(['/login']);
+        return throwError(() => new Error(message));
+      }
 
       if (isPlatformBrowser(platformId)) {
         showErrorSnackbar(snackBar, message, status);
