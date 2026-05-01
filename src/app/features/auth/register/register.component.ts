@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
 import { passwordMatchValidator } from '../validators/password-match.validator';
+import { AuthProvider } from '../../../core/enums/auth-provider.enum';
 
 @Component({
   selector: 'app-register',
@@ -63,6 +64,14 @@ export class RegisterComponent {
 
   login(): void {
     this.router.navigate(['/login']);
+  }
+
+  registerWithGoogle(): void {
+    this.authService.oauth2Login(AuthProvider.GOOGLE);
+  }
+
+  registerWithGithub(): void {
+    this.authService.oauth2Login(AuthProvider.GITHUB);
   }
 
   isPasswordMismatchVisible(): boolean {
