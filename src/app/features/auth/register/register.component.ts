@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../../core/services/auth.service';
@@ -7,35 +7,7 @@ import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
-
-const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  const password = control.get('password')?.value;
-  const confirmPasswordControl = control.get('confirmPassword');
-  const confirmPassword = confirmPasswordControl?.value;
-
-  if (!confirmPasswordControl) {
-    return null;
-  }
-
-  const currentErrors = confirmPasswordControl.errors ?? {};
-  const { passwordMismatch, ...otherErrors } = currentErrors;
-
-  const shouldCheckMismatch = !!password && !!confirmPassword;
-
-  if (!shouldCheckMismatch) {
-    confirmPasswordControl.setErrors(Object.keys(otherErrors).length ? otherErrors : null);
-    return null;
-  }
-
-  if (password !== confirmPassword) {
-    confirmPasswordControl.setErrors({ ...otherErrors, passwordMismatch: true });
-    return { passwordMismatch: true };
-  }
-
-  confirmPasswordControl.setErrors(Object.keys(otherErrors).length ? otherErrors : null);
-
-  return null;
-};
+import { passwordMatchValidator } from '../validators/password-match.validator';
 
 @Component({
   selector: 'app-register',
@@ -53,15 +25,16 @@ const passwordMatchValidator: ValidatorFn = (control: AbstractControl): Validati
 export class RegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  readonly isLoading = signal(false);
   private readonly fb = inject(FormBuilder);
+  readonly isLoading = signal(false);
+
   readonly form = this.fb.nonNullable.group({
     fullname: ['', [Validators.required, Validators.minLength(2)]],
     username: ['', [Validators.required, Validators.minLength(3)]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     confirmPassword: ['', [Validators.required, Validators.minLength(6)]]
   }, {
-    validators: passwordMatchValidator
+    validators: passwordMatchValidator()
   });
   readonly controls = this.form.controls;
 
@@ -73,17 +46,13 @@ export class RegisterComponent {
 
     const { fullname, username, password } = this.form.getRawValue();
 
-    this.isLoading.set(true);
-    this.form.disable({ emitEvent: false });
+    this.startLoading();
     this.authService.register({
       fullname,
       username,
       password
     }).pipe(
-      finalize(() => {
-        this.isLoading.set(false);
-        this.form.enable({ emitEvent: false });
-      })
+      finalize(() => this.stopLoading())
     ).subscribe({
       next: () => {
         this.router.navigate(['/']);
@@ -97,9 +66,23 @@ export class RegisterComponent {
   }
 
   isPasswordMismatchVisible(): boolean {
-    const passwordTouched = this.controls.password.touched || this.controls.password.dirty;
-    const confirmTouched = this.controls.confirmPassword.touched || this.controls.confirmPassword.dirty;
+    const passwordTouched = this.isControlInteracted(this.controls.password);
+    const confirmTouched = this.isControlInteracted(this.controls.confirmPassword);
 
     return (passwordTouched || confirmTouched) && this.controls.confirmPassword.hasError('passwordMismatch');
+  }
+
+  private startLoading(): void {
+    this.isLoading.set(true);
+    this.form.disable({ emitEvent: false });
+  }
+
+  private stopLoading(): void {
+    this.isLoading.set(false);
+    this.form.enable({ emitEvent: false });
+  }
+
+  private isControlInteracted(control: AbstractControl): boolean {
+    return control.touched || control.dirty;
   }
 }
