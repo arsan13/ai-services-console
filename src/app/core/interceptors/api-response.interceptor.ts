@@ -18,6 +18,8 @@ class ApiWrappedError extends Error {
   }
 }
 
+const SESSION_VALIDATION_PATHS = ['/me'];
+
 function isApiResponseBody(body: unknown): body is ApiResponse<unknown> {
   return !!body && typeof body === 'object' && 'success' in body;
 }
@@ -87,6 +89,14 @@ function resolveError(err: unknown): ResolvedError {
   return { message: 'An unexpected error occurred' };
 }
 
+function shouldLogoutOnUnauthorized(status: number | undefined, requestUrl: string): boolean {
+  if (status !== 401) {
+    return false;
+  }
+
+  return SESSION_VALIDATION_PATHS.some((path) => requestUrl.includes(path));
+}
+
 export const apiResponseInterceptor: HttpInterceptorFn = (req, next) => {
   const platformId = inject(PLATFORM_ID);
   const snackBar = inject(MatSnackBar);
@@ -98,7 +108,7 @@ export const apiResponseInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((err: unknown) => {
       const { message, status } = resolveError(err);
 
-      if (status === 401) {
+      if (shouldLogoutOnUnauthorized(status, req.url)) {
         auth.logout();
         router.navigate(['/login']);
         return throwError(() => new Error(message));

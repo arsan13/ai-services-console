@@ -6,16 +6,38 @@
     <header class="chat-header">
       <div class="title-wrap">
         <p class="eyebrow">AI Assistant</p>
-        <h2>Conversation</h2>
+        <div class="heading-row">
+          <h2>Conversation</h2>
+
+          @if (chatTypeService.allowedChatTypes().length > 0) {
+            <mat-form-field appearance="outline" class="chat-type-field" subscriptSizing="dynamic">
+              <mat-label>Chat type</mat-label>
+              <mat-select
+                [value]="chatTypeService.selectedChatTypeCode()"
+                [disabled]="chatService.loading()"
+                (valueChange)="onChatTypeChange($event)"
+                aria-label="Select chat type"
+              >
+                @for (chatType of chatTypeService.allowedChatTypes(); track chatType.code) {
+                  <mat-option [value]="chatType.code">{{ chatType.displayName }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+        </div>
+
+        @if (chatTypeService.allowedChatTypes().length === 0 && !chatTypeService.loading()) {
+          <p class="chat-type-empty">No chat type available for your permissions.</p>
+        }
       </div>
       <div class="header-actions">
-        @if (chatService.loading()) {
+        @if (chatService.loading() && chatTypeService.selectedChatType()) {
           <mat-progress-spinner diameter="24" mode="indeterminate" color="primary" aria-label="Loading response"></mat-progress-spinner>
           <button mat-button (click)="chatService.stopMessage()" aria-label="Stop request">
             <mat-icon>stop_circle</mat-icon>
             Stop
           </button>
-        } @else if (chatService.messages().length > 0) {
+        } @else if (chatService.messages().length > 0 && chatTypeService.selectedChatType()) {
           <button mat-button (click)="deleteConversation()" aria-label="Clear conversation">
             <mat-icon>delete_outline</mat-icon>
             Clear conversation
@@ -25,7 +47,12 @@
     </header>
 
     <div class="messages" #messagesContainer role="log" aria-label="Chat messages" aria-live="polite">
-      @if (chatService.messages().length === 0) {
+      @if (chatTypeService.allowedChatTypes().length === 0 && !chatTypeService.loading()) {
+        <div class="empty-state">
+          <h3>No chat access</h3>
+          <p>Your account does not currently have permission to use any chat type.</p>
+        </div>
+      } @else if (chatService.messages().length === 0) {
         <div class="empty-state">
           <h3>Start the conversation</h3>
           <p>Ask anything to get an instant AI response.</p>
@@ -61,11 +88,11 @@
         <input
           matInput
           [(ngModel)]="message"
-          [disabled]="chatService.loading()"
+          [disabled]="chatService.loading() || !chatTypeService.selectedChatType()"
           (keyup.enter)="send()"
           (keydown)="handleKey($event)"
           aria-label="Chat input"
-          [attr.aria-disabled]="chatService.loading()"
+          [attr.aria-disabled]="chatService.loading() || !chatTypeService.selectedChatType()"
         />
       </mat-form-field>
 
@@ -73,7 +100,7 @@
         mat-fab 
         color="primary" 
         (click)="send()" 
-        [disabled]="chatService.loading() || message.trim().length < 1"
+        [disabled]="chatService.loading() || message.trim().length < 1 || !chatTypeService.selectedChatType()"
         aria-label="Send message"
       >
         <mat-icon>send</mat-icon>

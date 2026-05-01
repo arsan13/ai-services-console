@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Subject, takeUntil } from 'rxjs';
 import { ChatRequest, ChatResponse, Message } from '../../features/chat/message.model';
 import { environment } from '../../../environments/environment';
+import { ChatTypeCode } from '../models/chat-type.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,7 @@ export class ChatbotService {
     this.loading.set(false);
   }
 
-  sendMessage(message: string) {
+  sendMessage(message: string, chatType: ChatTypeCode) {
     this.loading.set(true);
 
     const userMessage: Message = {
@@ -34,7 +35,7 @@ export class ChatbotService {
     this.messages.update((m) => [...m, userMessage]);
 
     const body: ChatRequest = { message };
-    this.http.post<ChatResponse>(`${this.apiUrl}?type=aviation`, body).pipe(
+    this.http.post<ChatResponse>(`${this.apiUrl}/${chatType}`, body).pipe(
       takeUntil(this.cancelRequest$)
     ).subscribe({
       next: (res: ChatResponse) => {
@@ -51,8 +52,8 @@ export class ChatbotService {
     });
   }
 
-  deleteConversation() {
-    return this.http.delete(`${this.apiUrl}/conversation?type=aviation`);
+  deleteConversation(chatType: ChatTypeCode) {
+    return this.http.delete(`${this.apiUrl}/${chatType}/conversation`);
   }
 
   clearMessages() {

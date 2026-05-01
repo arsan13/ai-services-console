@@ -1,6 +1,6 @@
 import { AuthProvider } from "../enums/auth-provider.enum";
-import { PermissionType } from "../enums/permission-type.enum";
 import { RoleType } from "../enums/role-type.enum";
+import { Permission } from "./permission.model";
 
 export interface LoginPayload {
   username: string;
@@ -23,6 +23,6 @@ export interface UserProfile {
   fullName?: string;
   username?: string;
   roles?: RoleType[];
-  permissions?: PermissionType[];
+  permissions?: Permission[];
   providerType?: AuthProvider;
 }
