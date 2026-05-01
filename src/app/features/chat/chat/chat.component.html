@@ -31,13 +31,7 @@
         }
       </div>
       <div class="header-actions">
-        @if (chatService.loading() && chatTypeService.selectedChatType()) {
-          <mat-progress-spinner diameter="24" mode="indeterminate" color="primary" aria-label="Loading response"></mat-progress-spinner>
-          <button mat-button (click)="chatService.stopMessage()" aria-label="Stop request">
-            <mat-icon>stop_circle</mat-icon>
-            Stop
-          </button>
-        } @else if (chatService.messages().length > 0 && chatTypeService.selectedChatType()) {
+        @if (chatService.messages().length > 0 && chatTypeService.selectedChatType() && !chatService.loading()) {
           <button mat-button (click)="deleteConversation()" aria-label="Clear conversation">
             <mat-icon>delete_outline</mat-icon>
             Clear conversation
@@ -96,14 +90,23 @@
         />
       </mat-form-field>
 
-      <button 
+      <button
         mat-fab 
         color="primary" 
-        (click)="send()" 
-        [disabled]="chatService.loading() || message.trim().length < 1 || !chatTypeService.selectedChatType()"
-        aria-label="Send message"
+        class="submit-action-btn"
+        [class.stop-mode]="chatService.loading()"
+        (click)="chatService.loading() ? chatService.stopMessage() : send()"
+        [disabled]="!chatService.loading() && (message.trim().length < 1 || !chatTypeService.selectedChatType())"
+        [attr.aria-label]="chatService.loading() ? 'Stop response' : 'Send message'"
       >
-        <mat-icon>send</mat-icon>
+        @if (chatService.loading()) {
+          <span class="fab-loader-wrap" aria-hidden="true">
+            <span class="fab-loader-ring"></span>
+            <mat-icon class="fab-stop-icon">stop</mat-icon>
+          </span>
+        } @else {
+          <mat-icon>send</mat-icon>
+        }
       </button>
     </div>
   </mat-card>

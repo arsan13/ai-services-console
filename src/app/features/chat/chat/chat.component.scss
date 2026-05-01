@@ -285,6 +285,51 @@ h2 {
   width: 100%;
 }
 
+.submit-action-btn {
+  position: relative;
+  overflow: hidden;
+  transition: background-color 180ms ease, box-shadow 180ms ease, transform 120ms ease;
+}
+
+.submit-action-btn.stop-mode {
+  color: var(--mat-sys-on-primary-container);
+  background-color: var(--mat-sys-primary-container);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--mat-sys-primary) 28%, transparent);
+}
+
+.fab-loader-wrap {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fab-loader-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-top-color: currentColor;
+  animation: fab-spin 0.9s linear infinite;
+}
+
+.fab-stop-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+}
+
+@keyframes fab-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 768px) {
   :host {
     height: calc(100dvh - 56px);
