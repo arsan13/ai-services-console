@@ -14,9 +14,13 @@ This project is currently under development and is maintained as a hobby/learnin
 AI Services Console provides:
 
 - Email/password authentication (login and register)
-- OAuth2 login flow with success and error handling
-- Protected chat route with auth guard
-- Chat UI connected to backend AI endpoints
+- OAuth2 login/registration flow with success and error handling
+- Public-only guard for auth pages and protected chat route guard
+- Permission-aware multi-chat type support (`/ai/chat/types`)
+- Chat UI with chat type selector, access-aware empty states, stop/clear actions, and markdown responses
+- Light/Dark theme toggle with persisted user preference
+- Responsive auth and chat screens (mobile-first behavior for auth side panel)
+- Lazy-loaded route components for improved initial load performance
 - Angular SSR-compatible build output
 
 ## Tech Stack
@@ -79,19 +83,23 @@ If your backend URL changes, update the environment files as needed.
 
 ## Routing Summary
 
-- /login: User login
-- /register: User registration
+- /login: User login (blocked for authenticated users)
+- /register: User registration (blocked for authenticated users)
 - /oauth-success: OAuth callback success flow
 - /oauth-error: OAuth callback error flow
-- /chat: Protected chat page (requires auth)
+- /chat: Protected chat page (requires authenticated session)
 
 ## Build
 
 ### Build Locally
 
+Before pushing code for deployment, always run a local production build:
+
 ```bash
-npm run build
+ng build --configuration production
 ```
+
+Only push after this command succeeds.
 
 Build output is generated under:
 
@@ -122,8 +130,19 @@ node dist/ai-services-console/server/server.mjs
 - Auth requests fail locally:
 	- Ensure backend is running and accessible at the configured API endpoint
 
+- Redirects to login unexpectedly:
+	- Verify `/me` returns a valid user for your token
+	- Verify token is present in browser localStorage
+
+- Chat types not visible:
+	- Verify backend endpoint `/ai/chat/types` is reachable
+	- Verify logged-in user has required chat permissions (for example `chat:aviation:use`, `chat:generic:use`)
+
 - Chat endpoint errors:
-	- Verify backend AI endpoints are available under /ai/chat.
+	- Verify backend AI endpoints are available under `/ai/chat/{type}` and `/ai/chat/{type}/conversation`
+
+- Theme does not persist:
+	- Verify browser localStorage is enabled (theme key: `app-theme`)
 
 ## License
 
