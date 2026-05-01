@@ -1,17 +1,30 @@
 import { Routes } from '@angular/router';
-import { ChatComponent } from './features/chat/chat/chat.component';
 import { AuthGuard } from './core/guards/auth.guard';
-import { LoginComponent } from './features/auth/login/login.component';
-import { RegisterComponent } from './features/auth/register/register.component';
-import { OauthErrorComponent } from './features/auth/oauth-error/oauth-error.component';
-import { OauthSuccessComponent } from './features/auth/oauth-success/oauth-success.component';
 import { PublicOnlyGuard } from './core/guards/public-only.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/chat', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent, canActivate: [PublicOnlyGuard] },
-  { path: 'register', component: RegisterComponent, canActivate: [PublicOnlyGuard] },
-  { path: 'oauth-error', component: OauthErrorComponent },
-  { path: 'oauth-success', component: OauthSuccessComponent },
-  { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] }
+  {
+    path: 'login',
+    canActivate: [PublicOnlyGuard],
+    loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent)
+  },
+  {
+    path: 'register',
+    canActivate: [PublicOnlyGuard],
+    loadComponent: () => import('./features/auth/register/register.component').then((m) => m.RegisterComponent)
+  },
+  {
+    path: 'oauth-error',
+    loadComponent: () => import('./features/auth/oauth-error/oauth-error.component').then((m) => m.OauthErrorComponent)
+  },
+  {
+    path: 'oauth-success',
+    loadComponent: () => import('./features/auth/oauth-success/oauth-success.component').then((m) => m.OauthSuccessComponent)
+  },
+  {
+    path: 'chat',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./features/chat/chat/chat.component').then((m) => m.ChatComponent)
+  }
 ];

@@ -11,7 +11,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 
 const MAX_HISTORY = 20;
@@ -28,7 +27,6 @@ const MAX_HISTORY = 20;
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatProgressBarModule,
     MatSelectModule
   ],
   templateUrl: './chat.component.html',
