@@ -4,11 +4,10 @@
 }
 
 .auth-shell {
-	--panel-bg: #ffffff;
-	--ink-strong: #142a3d;
-	--ink-soft: #59748a;
-	--stroke: rgba(20, 51, 78, 0.1);
-	--accent: #0f6ea7;
+	--panel-bg: var(--mat-sys-surface-container-low);
+	--ink-strong: var(--mat-sys-on-surface);
+	--ink-soft: color-mix(in srgb, var(--mat-sys-on-surface) 66%, transparent);
+	--stroke: color-mix(in srgb, var(--mat-sys-outline) 32%, transparent);
 
 	position: relative;
 	min-height: calc(100dvh - 64px);
@@ -18,9 +17,14 @@
 	padding: 2rem 1rem;
 	overflow: hidden;
 	background:
-		radial-gradient(circle at 15% 10%, rgba(146, 223, 255, 0.42), transparent 40%),
-		radial-gradient(circle at 90% 85%, rgba(255, 209, 167, 0.35), transparent 45%),
-		linear-gradient(150deg, #eef6fb 0%, #f8fbff 55%, #fbf7f0 100%);
+		radial-gradient(circle at 15% 10%, color-mix(in srgb, var(--mat-sys-primary) 22%, transparent), transparent 40%),
+		radial-gradient(circle at 90% 85%, color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent), transparent 45%),
+		linear-gradient(
+			150deg,
+			color-mix(in srgb, var(--mat-sys-surface) 86%, var(--mat-sys-primary-container) 14%) 0%,
+			var(--mat-sys-surface) 55%,
+			color-mix(in srgb, var(--mat-sys-surface) 88%, var(--mat-sys-tertiary-container) 12%) 100%
+		);
 }
 
 .bg-orb {
@@ -36,7 +40,7 @@
 	height: 340px;
 	top: -90px;
 	left: -80px;
-	background: radial-gradient(circle at 40% 40%, #9fe3ff 0%, rgba(159, 227, 255, 0.2) 70%, transparent 100%);
+	background: radial-gradient(circle at 40% 40%, color-mix(in srgb, var(--mat-sys-primary) 24%, transparent) 0%, color-mix(in srgb, var(--mat-sys-primary) 14%, transparent) 70%, transparent 100%);
 }
 
 .orb-b {
@@ -44,7 +48,7 @@
 	height: 300px;
 	right: -70px;
 	bottom: -90px;
-	background: radial-gradient(circle at 60% 50%, #ffd2a8 0%, rgba(255, 210, 168, 0.24) 68%, transparent 100%);
+	background: radial-gradient(circle at 60% 50%, color-mix(in srgb, var(--mat-sys-tertiary) 26%, transparent) 0%, color-mix(in srgb, var(--mat-sys-tertiary) 14%, transparent) 68%, transparent 100%);
 }
 
 .auth-layout {
@@ -62,15 +66,19 @@
 .brand-panel {
 	padding: clamp(1.5rem, 3vw, 2.4rem);
 	background:
-		linear-gradient(165deg, rgba(222, 235, 245, 0.98) 0%, rgba(207, 224, 237, 0.98) 100%),
+		linear-gradient(
+			165deg,
+			color-mix(in srgb, var(--mat-sys-surface-container-high) 84%, var(--mat-sys-primary-container) 16%) 0%,
+			color-mix(in srgb, var(--mat-sys-surface-container-highest) 86%, var(--mat-sys-secondary-container) 14%) 100%
+		),
 		repeating-linear-gradient(
 			135deg,
-			rgba(255, 255, 255, 0.34) 0,
-			rgba(255, 255, 255, 0.34) 10px,
+			color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent) 0,
+			color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent) 10px,
 			transparent 10px,
 			transparent 24px
 		);
-	color: #17354a;
+	color: var(--mat-sys-on-surface);
 	display: grid;
 	align-content: center;
 	gap: 1rem;
@@ -82,7 +90,7 @@
 	text-transform: uppercase;
 	font-size: 0.76rem;
 	font-weight: 700;
-	color: rgba(33, 71, 96, 0.9);
+	color: color-mix(in srgb, var(--mat-sys-on-surface) 78%, transparent);
 }
 
 h1 {
@@ -94,7 +102,7 @@ h1 {
 
 .brand-copy {
 	margin: 0;
-	color: rgba(33, 71, 96, 0.9);
+	color: color-mix(in srgb, var(--mat-sys-on-surface) 74%, transparent);
 	line-height: 1.45;
 }
 
@@ -105,8 +113,8 @@ h1 {
 }
 
 .brand-tags span {
-	border: 1px solid rgba(41, 83, 111, 0.22);
-	background: rgba(255, 255, 255, 0.55);
+	border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 34%, transparent);
+	background: color-mix(in srgb, var(--mat-sys-surface) 72%, transparent);
 	padding: 0.35rem 0.65rem;
 	border-radius: 999px;
 	font-size: 0.76rem;
@@ -118,7 +126,7 @@ h1 {
 	letter-spacing: 0.08em;
 	font-size: 0.74rem;
 	text-transform: uppercase;
-	color: #4c6f89;
+	color: color-mix(in srgb, var(--mat-sys-on-surface-variant) 88%, transparent);
 	font-weight: 700;
 }
 
@@ -159,7 +167,7 @@ h1 {
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
-	color: #6c8598;
+	color: color-mix(in srgb, var(--mat-sys-on-surface-variant) 82%, transparent);
 	font-size: 0.78rem;
 	text-transform: uppercase;
 	letter-spacing: 0.07em;
@@ -170,7 +178,7 @@ h1 {
 	content: '';
 	height: 1px;
 	flex: 1;
-	background: rgba(22, 57, 84, 0.14);
+	background: color-mix(in srgb, var(--mat-sys-outline) 32%, transparent);
 }
 
 .oauth-actions {
@@ -187,7 +195,7 @@ h1 {
 	justify-content: center;
 	gap: 0.45rem;
 	font-weight: 600;
-	color: #20384b;
+	color: var(--mat-sys-on-surface);
 }
 
 .oauth-btn svg {
