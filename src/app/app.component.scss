@@ -17,6 +17,12 @@
   min-width: 0;
 }
 
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .brand {
   color: inherit;
   font-weight: 600;
@@ -58,6 +64,10 @@
   .toolbar-left {
     gap: 8px;
     flex: 1;
+  }
+
+  .toolbar-right {
+    gap: 0;
   }
 
   .brand {

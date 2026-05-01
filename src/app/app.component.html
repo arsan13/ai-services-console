@@ -7,9 +7,13 @@
     }
   </div>
 
-  @if (currentUser; as user) {
-    <app-user-menu [user]="user" />
-  }
+  <div class="toolbar-right">
+    <app-theme-toggle></app-theme-toggle>
+
+    @if (currentUser; as user) {
+      <app-user-menu [user]="user" />
+    }
+  </div>
 </mat-toolbar>
 
 <router-outlet></router-outlet>
