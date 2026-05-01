@@ -218,19 +218,19 @@ h1 {
 	justify-content: center;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
 	.auth-shell {
 		padding: 0.8rem;
 	}
 
 	.auth-layout {
+		width: min(100%, 560px);
 		border-radius: 16px;
 		grid-template-columns: 1fr;
 	}
 
 	.brand-panel {
-		gap: 0.7rem;
-		padding: 1.1rem 1rem;
+		display: none;
 	}
 
 	.auth-panel {

@@ -7,18 +7,21 @@
 .toolbar {
   display: flex;
   justify-content: space-between;
+  gap: 8px;
 }
 
 .toolbar-left {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .brand {
   color: inherit;
   font-weight: 600;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .toolbar-actions {
@@ -45,4 +48,22 @@
   border-radius: 999px;
   padding: 2px 8px;
   line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    padding-inline: 8px;
+  }
+
+  .toolbar-left {
+    gap: 8px;
+    flex: 1;
+  }
+
+  .brand {
+    font-size: 0.95rem;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

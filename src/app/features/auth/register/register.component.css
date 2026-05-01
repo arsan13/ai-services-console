@@ -218,23 +218,30 @@ h1 {
 	justify-content: center;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
 	.auth-shell {
 		padding: 0.8rem;
 	}
 
 	.auth-layout {
-		border-radius: 16px;
+		width: min(100%, 560px);
+		border-radius: 0;
 		grid-template-columns: 1fr;
+		border: 0;
+		box-shadow: none;
+		background: transparent;
 	}
 
 	.brand-panel {
-		gap: 0.7rem;
-		padding: 1.1rem 1rem;
+		display: none;
 	}
 
 	.auth-panel {
 		padding: 1rem;
+		border-radius: 16px;
+		border: 1px solid var(--stroke);
+		background: var(--panel-bg);
+		box-shadow: 0 14px 28px rgba(14, 35, 53, 0.1);
 	}
 
 	.oauth-actions {
