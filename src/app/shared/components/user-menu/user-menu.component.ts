@@ -18,6 +18,10 @@ export class UserMenuComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
+  openChangePassword(): void {
+    this.router.navigate(['/change-password']);
+  }
+
   logout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);

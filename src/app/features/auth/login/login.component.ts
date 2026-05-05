@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { AuthProvider } from '../../../core/enums/auth-provider.enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
+import { Oauth2Service } from '../../../core/services/oauth2.service';
 
 @Component({
   selector: 'app-login',
@@ -24,11 +25,12 @@ import { finalize } from 'rxjs';
 })
 export class LoginComponent {
   private readonly authService = inject(AuthService);
+  private readonly oauth2Service = inject(Oauth2Service);
   private readonly router = inject(Router);
   readonly isLoading = signal(false);
   private readonly fb = inject(FormBuilder);
   readonly form = this.fb.nonNullable.group({
-    username: ['', [Validators.required, Validators.minLength(3)]],
+    email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]]
   });
   readonly controls = this.form.controls;
@@ -39,11 +41,11 @@ export class LoginComponent {
       return;
     }
 
-    const { username, password } = this.form.getRawValue();
+    const { email, password } = this.form.getRawValue();
 
     this.isLoading.set(true);
     this.form.disable({ emitEvent: false });
-    this.authService.login({ username, password })
+    this.authService.login({ email, password })
       .pipe(
         finalize(() => {
           this.isLoading.set(false);
@@ -62,11 +64,15 @@ export class LoginComponent {
     this.router.navigate(['/register']);
   }
 
+  forgotPassword(): void {
+    this.router.navigate(['/forgot-password']);
+  }
+
   loginWithGoogle(): void {
-    this.authService.oauth2Login(AuthProvider.GOOGLE);
+    this.oauth2Service.login(AuthProvider.GOOGLE);
   }
 
   loginWithGithub(): void {
-    this.authService.oauth2Login(AuthProvider.GITHUB);
+    this.oauth2Service.login(AuthProvider.GITHUB);
   }
 }

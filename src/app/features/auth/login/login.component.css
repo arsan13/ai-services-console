@@ -162,6 +162,12 @@ h1 {
 	min-height: 44px;
 }
 
+.aux-actions {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: -0.2rem;
+}
+
 .divider {
 	margin: 1rem 0 0.85rem;
 	display: flex;

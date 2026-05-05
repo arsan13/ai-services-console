@@ -2,7 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { Oauth2Service } from '../../../core/services/oauth2.service';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -11,7 +11,7 @@ import { finalize } from 'rxjs';
   styleUrl: './oauth-success.component.css',
 })
 export class OauthSuccessComponent implements OnInit {
-  private readonly authService = inject(AuthService);
+  private readonly oauth2Service = inject(Oauth2Service);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
@@ -36,7 +36,7 @@ export class OauthSuccessComponent implements OnInit {
 
     this.message = 'Loading your profile...';
 
-    this.authService.completeOauth2Login(token)
+    this.oauth2Service.completeLogin(token)
       .pipe(finalize(() => {
         this.message = 'Login successful. Redirecting...';
         void this.router.navigate(['/chat'], { replaceUrl: true });

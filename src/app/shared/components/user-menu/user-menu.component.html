@@ -1,20 +1,22 @@
 <button mat-button [matMenuTriggerFor]="userMenu" class="user-trigger">
   <mat-icon>account_circle</mat-icon>
-  <span class="trigger-name">{{ user().fullName || user().username }}</span>
+  <span class="trigger-name">{{ user().fullName || user().email || user().username }}</span>
   <mat-icon>arrow_drop_down</mat-icon>
 </button>
 
 <mat-menu #userMenu="matMenu" xPosition="before">
   <div class="menu-header" (click)="$event.stopPropagation()">
-    <p class="menu-name">{{ user().fullName || user().username }}</p>
-    @if (user().username) {
+    <p class="menu-name">{{ user().fullName || user().email || user().username }}</p>
+    @if (user().email) {
+      <p class="menu-username">{{ user().email }}</p>
+    } @else if (user().username) {
       <p class="menu-username">&#64;{{ user().username }}</p>
     }
   </div>
 
   <mat-divider />
 
-  @if (user().roles?.length) {
+  @if (user().roles.length) {
     <div class="menu-section-label" (click)="$event.stopPropagation()">Roles</div>
     @for (role of user().roles; track role) {
       <div class="menu-role" (click)="$event.stopPropagation()">
@@ -23,6 +25,13 @@
     }
     <mat-divider />
   }
+
+  <button mat-menu-item (click)="openChangePassword()">
+    <mat-icon>lock_reset</mat-icon>
+    <span>Change password</span>
+  </button>
+
+  <mat-divider />
 
   <button mat-menu-item (click)="logout()">
     <mat-icon>logout</mat-icon>

@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
 import { passwordMatchValidator } from '../validators/password-match.validator';
 import { AuthProvider } from '../../../core/enums/auth-provider.enum';
+import { Oauth2Service } from '../../../core/services/oauth2.service';
 
 @Component({
   selector: 'app-register',
@@ -25,13 +26,14 @@ import { AuthProvider } from '../../../core/enums/auth-provider.enum';
 })
 export class RegisterComponent {
   private readonly authService = inject(AuthService);
+  private readonly oauth2Service = inject(Oauth2Service);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   readonly isLoading = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     fullname: ['', [Validators.required, Validators.minLength(2)]],
-    username: ['', [Validators.required, Validators.minLength(3)]],
+    email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     confirmPassword: ['', [Validators.required, Validators.minLength(6)]]
   }, {
@@ -45,12 +47,12 @@ export class RegisterComponent {
       return;
     }
 
-    const { fullname, username, password } = this.form.getRawValue();
+    const { fullname, email, password } = this.form.getRawValue();
 
     this.startLoading();
     this.authService.register({
       fullname,
-      username,
+      email,
       password
     }).pipe(
       finalize(() => this.stopLoading())
@@ -67,11 +69,11 @@ export class RegisterComponent {
   }
 
   registerWithGoogle(): void {
-    this.authService.oauth2Login(AuthProvider.GOOGLE);
+    this.oauth2Service.login(AuthProvider.GOOGLE);
   }
 
   registerWithGithub(): void {
-    this.authService.oauth2Login(AuthProvider.GITHUB);
+    this.oauth2Service.login(AuthProvider.GITHUB);
   }
 
   isPasswordMismatchVisible(): boolean {
