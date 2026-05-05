@@ -16,4 +16,15 @@
   </div>
 </mat-toolbar>
 
+@if (shouldShowVerificationBanner) {
+  <app-verification-banner
+    [source]="verificationBannerSource()"
+    [resendLoading]="resendLoading()"
+    [resendStatus]="resendStatus()"
+    [resendStatusMessage]="resendStatusMessage()"
+    (dismissed)="onBannerDismissed()"
+    (resendClicked)="onResendVerification()"
+  />
+}
+
 <router-outlet></router-outlet>

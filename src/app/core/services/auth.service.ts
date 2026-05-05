@@ -9,7 +9,9 @@ import {
   LoginPayload,
   RegisterPayload,
   ResetPasswordPayload,
-  UserProfile
+  UserProfile,
+  VerifyEmailPayload,
+  ResendVerificationPayload
 } from '../models/auth.model';
 import { UserService } from './user.service';
 
@@ -43,6 +45,18 @@ export class AuthService {
 
   resetPassword(payload: ResetPasswordPayload): Observable<void> {
     return this.http.post<unknown>(`${this.authApiUrl}/reset-password`, payload).pipe(
+      map(() => void 0)
+    );
+  }
+
+  verifyEmail(payload: VerifyEmailPayload): Observable<void> {
+    return this.http.post<unknown>(`${this.authApiUrl}/verify-email`, payload).pipe(
+      map(() => void 0)
+    );
+  }
+
+  resendVerificationEmail(payload: ResendVerificationPayload): Observable<void> {
+    return this.http.post<unknown>(`${this.authApiUrl}/resend-verification`, payload).pipe(
       map(() => void 0)
     );
   }

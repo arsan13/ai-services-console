@@ -30,9 +30,10 @@ export class RegisterComponent {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   readonly isLoading = signal(false);
+  readonly showVerificationBanner = signal(false);
 
   readonly form = this.fb.nonNullable.group({
-    fullname: ['', [Validators.required, Validators.minLength(2)]],
+    fullName: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     confirmPassword: ['', [Validators.required, Validators.minLength(6)]]
@@ -47,20 +48,24 @@ export class RegisterComponent {
       return;
     }
 
-    const { fullname, email, password } = this.form.getRawValue();
+    const { fullName, email, password } = this.form.getRawValue();
+    sessionStorage.setItem('verificationSource', 'register');
 
     this.startLoading();
     this.authService.register({
-      fullname,
+      fullName,
       email,
       password
     }).pipe(
       finalize(() => this.stopLoading())
     ).subscribe({
       next: () => {
+        this.showVerificationBanner.set(true);
         this.router.navigate(['/']);
       },
-      error: () => {}
+      error: () => {
+        sessionStorage.removeItem('verificationSource');
+      }
     });
   }
 

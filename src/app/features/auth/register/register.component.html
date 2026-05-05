@@ -22,10 +22,10 @@
       <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
         <mat-form-field class="field" appearance="outline">
           <mat-label>Full Name</mat-label>
-          <input matInput autocomplete="name" formControlName="fullname" />
-          @if ((controls.fullname.touched || controls.fullname.dirty) && controls.fullname.hasError('required')) {
+          <input matInput autocomplete="name" formControlName="fullName" />
+          @if ((controls.fullName.touched || controls.fullName.dirty) && controls.fullName.hasError('required')) {
             <mat-error>Full name is required.</mat-error>
-          } @else if ((controls.fullname.touched || controls.fullname.dirty) && controls.fullname.hasError('minlength')) {
+          } @else if ((controls.fullName.touched || controls.fullName.dirty) && controls.fullName.hasError('minlength')) {
             <mat-error>Full name must be at least 2 characters.</mat-error>
           }
         </mat-form-field>

@@ -8,7 +8,7 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-  fullname: string;
+  fullName: string;
   email: string;
   password: string;
 }
@@ -27,6 +27,14 @@ export interface ChangePasswordPayload {
   newPassword: string;
 }
 
+export interface VerifyEmailPayload {
+  token: string;
+}
+
+export interface ResendVerificationPayload {
+  email: string;
+}
+
 export interface AuthResponse {
   token: string;
   userProfile?: UserProfile;
@@ -36,7 +44,6 @@ export interface UserProfile {
   id: number;
   fullName: string;
   email: string;
-  username?: string;
   roles: RoleType[];
   permissions: Permission[];
   providerType: AuthProvider;

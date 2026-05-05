@@ -54,6 +54,7 @@ export class LoginComponent {
       )
       .subscribe({
         next: () => {
+          sessionStorage.setItem('verificationSource', 'login');
           this.router.navigate(['/']);
         },
         error: () => {}
