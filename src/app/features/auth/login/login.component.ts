@@ -9,6 +9,8 @@ import { AuthProvider } from '../../../core/enums/auth-provider.enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs';
 import { Oauth2Service } from '../../../core/services/oauth2.service';
+import { PasswordVisibilityDirective } from '../../../shared/directives/password-visibility.directive';
+import { PasswordVisibilityToggleComponent } from '../../../shared/components/password-visibility-toggle/password-visibility-toggle.component';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +20,9 @@ import { Oauth2Service } from '../../../core/services/oauth2.service';
     MatFormField,
     MatInputModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    PasswordVisibilityDirective,
+    PasswordVisibilityToggleComponent
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',

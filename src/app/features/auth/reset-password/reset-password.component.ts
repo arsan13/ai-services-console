@@ -9,6 +9,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
 import { passwordMatchValidator } from '../validators/password-match.validator';
+import { PasswordVisibilityDirective } from '../../../shared/directives/password-visibility.directive';
+import { PasswordVisibilityToggleComponent } from '../../../shared/components/password-visibility-toggle/password-visibility-toggle.component';
 
 @Component({
   selector: 'app-reset-password',
@@ -18,7 +20,9 @@ import { passwordMatchValidator } from '../validators/password-match.validator';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    PasswordVisibilityDirective,
+    PasswordVisibilityToggleComponent
   ],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.css',

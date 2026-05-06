@@ -32,7 +32,8 @@
 
         <mat-form-field class="field" appearance="outline">
           <mat-label>Password</mat-label>
-          <input matInput type="password" autocomplete="current-password" formControlName="password" />
+          <input matInput appPasswordVisibility #passwordVisibility="appPasswordVisibility" autocomplete="current-password" formControlName="password" />
+          <app-password-visibility-toggle matSuffix [passwordVisibility]="passwordVisibility" controlLabel="password" />
           @if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('required')) {
             <mat-error>Password is required.</mat-error>
           } @else if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('minlength')) {

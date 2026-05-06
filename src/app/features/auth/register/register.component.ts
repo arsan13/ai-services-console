@@ -10,6 +10,8 @@ import { finalize } from 'rxjs';
 import { passwordMatchValidator } from '../validators/password-match.validator';
 import { AuthProvider } from '../../../core/enums/auth-provider.enum';
 import { Oauth2Service } from '../../../core/services/oauth2.service';
+import { PasswordVisibilityDirective } from '../../../shared/directives/password-visibility.directive';
+import { PasswordVisibilityToggleComponent } from '../../../shared/components/password-visibility-toggle/password-visibility-toggle.component';
 
 @Component({
   selector: 'app-register',
@@ -19,7 +21,9 @@ import { Oauth2Service } from '../../../core/services/oauth2.service';
     MatFormField,
     MatInputModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    PasswordVisibilityDirective,
+    PasswordVisibilityToggleComponent
   ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',

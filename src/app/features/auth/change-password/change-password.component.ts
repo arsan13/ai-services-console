@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +9,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { UserService } from '../../../core/services/user.service';
 import { passwordMatchValidator } from '../validators/password-match.validator';
+import { PasswordVisibilityDirective } from '../../../shared/directives/password-visibility.directive';
+import { PasswordVisibilityToggleComponent } from '../../../shared/components/password-visibility-toggle/password-visibility-toggle.component';
 
 @Component({
   selector: 'app-change-password',
@@ -18,7 +20,9 @@ import { passwordMatchValidator } from '../validators/password-match.validator';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    PasswordVisibilityDirective,
+    PasswordVisibilityToggleComponent
   ],
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.css',
@@ -30,7 +34,7 @@ export class ChangePasswordComponent {
   private readonly fb = inject(FormBuilder);
 
   readonly isLoading = signal(false);
-  readonly isSaved = signal(false);
+  readonly isCompleted = signal(false);
 
   readonly form = this.fb.nonNullable.group({
     currentPassword: ['', [Validators.required, Validators.minLength(6)]],
@@ -42,13 +46,11 @@ export class ChangePasswordComponent {
 
   readonly controls = this.form.controls;
 
-  onSubmit(formDirective: FormGroupDirective): void {
+  onSubmit(): void {
     if (this.isLoading() || this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-
-    this.isSaved.set(false);
 
     const { currentPassword, newPassword } = this.form.getRawValue();
 
@@ -62,12 +64,7 @@ export class ChangePasswordComponent {
       })
     ).subscribe({
       next: () => {
-        this.isSaved.set(true);
-        formDirective.resetForm({
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        });
+        this.isCompleted.set(true);
       },
       error: () => {}
     });

@@ -42,7 +42,8 @@
 
         <mat-form-field class="field" appearance="outline">
           <mat-label>Password</mat-label>
-          <input matInput type="password" autocomplete="new-password" formControlName="password" />
+          <input matInput appPasswordVisibility #passwordVisibility="appPasswordVisibility" autocomplete="new-password" formControlName="password" />
+          <app-password-visibility-toggle matSuffix [passwordVisibility]="passwordVisibility" controlLabel="password" />
           @if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('required')) {
             <mat-error>Password is required.</mat-error>
           } @else if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('minlength')) {
@@ -52,7 +53,8 @@
 
         <mat-form-field class="field" appearance="outline">
           <mat-label>Confirm Password</mat-label>
-          <input matInput type="password" autocomplete="new-password" formControlName="confirmPassword" />
+          <input matInput appPasswordVisibility #confirmPasswordVisibility="appPasswordVisibility" autocomplete="new-password" formControlName="confirmPassword" />
+          <app-password-visibility-toggle matSuffix [passwordVisibility]="confirmPasswordVisibility" controlLabel="confirm password" />
           @if ((controls.confirmPassword.touched || controls.confirmPassword.dirty) && controls.confirmPassword.hasError('required')) {
             <mat-error>Confirm password is required.</mat-error>
           } @else if ((controls.confirmPassword.touched || controls.confirmPassword.dirty) && controls.confirmPassword.hasError('minlength')) {
