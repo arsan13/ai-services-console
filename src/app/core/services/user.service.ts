@@ -1,8 +1,8 @@
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { UserProfile } from '../models/auth.model';
+import { ChangePasswordPayload, UserProfile } from '../models/auth.model';
 import { Permission } from '../models/permission.model';
 
 @Injectable({ providedIn: 'root' })
@@ -16,6 +16,12 @@ export class UserService {
   verifySession(): Observable<UserProfile> {
     return this.http.get<UserProfile>(this.meUrl).pipe(
       tap(user => this.currentUserSignal.set(user))
+    );
+  }
+
+  changePassword(payload: ChangePasswordPayload): Observable<void> {
+    return this.http.post<unknown>(`${this.meUrl}/change-password`, payload).pipe(
+      map(() => void 0)
     );
   }
 

@@ -12,7 +12,10 @@ describe('OauthErrorComponent', () => {
     await TestBed.configureTestingModule({
       imports: [OauthErrorComponent],
       providers: [
-        provideRouter([]),
+        provideRouter([
+          { path: 'login', component: OauthErrorComponent },
+          { path: 'chat', component: OauthErrorComponent }
+        ]),
         {
           provide: ActivatedRoute,
           useValue: {

@@ -1,10 +1,19 @@
-import { catchError, finalize, Observable, of, shareReplay, tap } from 'rxjs';
+import { catchError, finalize, map, Observable, of, shareReplay, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginPayload, RegisterPayload, UserProfile } from '../models/auth.model';
-import { AuthProvider } from '../enums/auth-provider.enum';
+import {
+  AuthResponse,
+  ForgotPasswordPayload,
+  LoginPayload,
+  RegisterPayload,
+  ResetPasswordPayload,
+  UserProfile,
+  VerifyEmailPayload,
+  ResendVerificationPayload,
+  AvailabilityResponse
+} from '../models/auth.model';
 import { UserService } from './user.service';
 
 @Injectable({ providedIn: 'root' })
@@ -29,8 +38,36 @@ export class AuthService {
     );
   }
 
-  oauth2Login(provider: AuthProvider): void {
-    window.location.href = `${this.authApiUrl}/oauth2/${provider}`;
+  checkEmailAvailability(email: string): Observable<boolean> {
+    return this.http.get<AvailabilityResponse>(`${this.authApiUrl}/availability`, {
+      params: { email }
+    }).pipe(
+      map((response) => response.available)
+    );
+  }
+
+  forgotPassword(payload: ForgotPasswordPayload): Observable<void> {
+    return this.http.post<unknown>(`${this.authApiUrl}/forgot-password`, payload).pipe(
+      map(() => void 0)
+    );
+  }
+
+  resetPassword(payload: ResetPasswordPayload): Observable<void> {
+    return this.http.post<unknown>(`${this.authApiUrl}/reset-password`, payload).pipe(
+      map(() => void 0)
+    );
+  }
+
+  verifyEmail(payload: VerifyEmailPayload): Observable<void> {
+    return this.http.post<unknown>(`${this.authApiUrl}/verify-email`, payload).pipe(
+      map(() => void 0)
+    );
+  }
+
+  resendVerificationEmail(payload: ResendVerificationPayload): Observable<void> {
+    return this.http.post<unknown>(`${this.authApiUrl}/resend-verification`, payload).pipe(
+      map(() => void 0)
+    );
   }
 
   initializeUser(): Observable<UserProfile | null> {
@@ -64,9 +101,8 @@ export class AuthService {
     return this.initializeUserRequest$;
   }
 
-  completeOauth2Login(token: string): Observable<UserProfile | null> {
+  setSessionToken(token: string): void {
     this.storeToken(token);
-    return this.userService.load();
   }
 
   isLoggedIn(): boolean {

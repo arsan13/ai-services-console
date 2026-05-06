@@ -20,49 +20,88 @@
       <p class="subtitle">Set up your profile and start chatting in seconds.</p>
 
       <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        @let fullNameInteracted = controls.fullName.touched || controls.fullName.dirty;
+        @let emailInteracted = controls.email.touched || controls.email.dirty;
+        @let passwordInteracted = controls.password.touched || controls.password.dirty;
+        @let confirmPasswordInteracted = controls.confirmPassword.touched || controls.confirmPassword.dirty;
+
         <mat-form-field class="field" appearance="outline">
           <mat-label>Full Name</mat-label>
-          <input matInput formControlName="fullname" />
-          @if ((controls.fullname.touched || controls.fullname.dirty) && controls.fullname.hasError('required')) {
+          <input matInput autocomplete="name" formControlName="fullName" />
+          @if (fullNameInteracted && controls.fullName.hasError('required')) {
             <mat-error>Full name is required.</mat-error>
-          } @else if ((controls.fullname.touched || controls.fullname.dirty) && controls.fullname.hasError('minlength')) {
+          } @else if (fullNameInteracted && controls.fullName.hasError('minlength')) {
             <mat-error>Full name must be at least 2 characters.</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field class="field" appearance="outline">
-          <mat-label>Username or Email</mat-label>
-          <input matInput formControlName="username" />
-          @if ((controls.username.touched || controls.username.dirty) && controls.username.hasError('required')) {
-            <mat-error>Username or email is required.</mat-error>
-          } @else if ((controls.username.touched || controls.username.dirty) && controls.username.hasError('minlength')) {
-            <mat-error>Please enter at least 3 characters.</mat-error>
+          <mat-label>Email</mat-label>
+          <input matInput type="email" autocomplete="email" formControlName="email" />
+          <span
+            matSuffix
+            class="email-status-suffix"
+            [class.email-status-suffix--hidden]="
+              !emailInteracted
+              || controls.email.hasError('required')
+              || controls.email.hasError('email')
+              || emailAvailabilityStatus() === 'idle'
+            "
+          >
+            @if (emailAvailabilityStatus() === 'checking') {
+              <mat-spinner diameter="18"></mat-spinner>
+            } @else if (emailAvailabilityStatus() === 'available') {
+              <mat-icon class="email-status-icon email-status-icon--available" aria-hidden="true">check_circle</mat-icon>
+            } @else if (emailAvailabilityStatus() === 'unavailable') {
+              <mat-icon class="email-status-icon email-status-icon--unavailable" aria-hidden="true">cancel</mat-icon>
+            }
+          </span>
+          @if (emailInteracted && controls.email.hasError('required')) {
+            <mat-error>Email is required.</mat-error>
+          } @else if (emailInteracted && controls.email.hasError('email')) {
+            <mat-error>Enter a valid email address.</mat-error>
+          } @else if (emailInteracted && controls.email.hasError('emailUnavailable')) {
+            <mat-error>
+              <span class="email-status-message" aria-live="polite">
+                <mat-icon class="email-status-message__icon" aria-hidden="true">cancel</mat-icon>
+                <span>Email is already registered. Try signing in instead.</span>
+              </span>
+            </mat-error>
+          } @else if (emailInteracted && (emailAvailabilityStatus() === 'checking' || emailAvailabilityStatus() === 'available')) {
+            <mat-hint class="email-availability-hint" [class.email-availability-hint--available]="emailAvailabilityStatus() === 'available'" aria-live="polite">
+              <span class="email-status-message">
+                <mat-icon class="email-status-message__icon" aria-hidden="true">{{ emailAvailabilityStatus() === 'checking' ? 'hourglass_top' : 'check_circle' }}</mat-icon>
+                <span>{{ emailAvailabilityStatus() === 'checking' ? 'Checking email availability...' : 'Email is available.' }}</span>
+              </span>
+            </mat-hint>
           }
         </mat-form-field>
 
         <mat-form-field class="field" appearance="outline">
           <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" />
-          @if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('required')) {
+          <input matInput appPasswordVisibility #passwordVisibility="appPasswordVisibility" autocomplete="new-password" formControlName="password" />
+          <app-password-visibility-toggle matSuffix [passwordVisibility]="passwordVisibility" controlLabel="password" />
+          @if (passwordInteracted && controls.password.hasError('required')) {
             <mat-error>Password is required.</mat-error>
-          } @else if ((controls.password.touched || controls.password.dirty) && controls.password.hasError('minlength')) {
+          } @else if (passwordInteracted && controls.password.hasError('minlength')) {
             <mat-error>Password must be at least 6 characters.</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field class="field" appearance="outline">
           <mat-label>Confirm Password</mat-label>
-          <input matInput type="password" formControlName="confirmPassword" />
-          @if ((controls.confirmPassword.touched || controls.confirmPassword.dirty) && controls.confirmPassword.hasError('required')) {
+          <input matInput appPasswordVisibility #confirmPasswordVisibility="appPasswordVisibility" autocomplete="new-password" formControlName="confirmPassword" />
+          <app-password-visibility-toggle matSuffix [passwordVisibility]="confirmPasswordVisibility" controlLabel="confirm password" />
+          @if (confirmPasswordInteracted && controls.confirmPassword.hasError('required')) {
             <mat-error>Confirm password is required.</mat-error>
-          } @else if ((controls.confirmPassword.touched || controls.confirmPassword.dirty) && controls.confirmPassword.hasError('minlength')) {
+          } @else if (confirmPasswordInteracted && controls.confirmPassword.hasError('minlength')) {
             <mat-error>Confirm password must be at least 6 characters.</mat-error>
           } @else if (isPasswordMismatchVisible()) {
             <mat-error>Passwords do not match.</mat-error>
           }
         </mat-form-field>
 
-        <button class="submit-btn" type="submit" mat-flat-button color="primary" [disabled]="isLoading()">
+        <button class="submit-btn" type="submit" mat-flat-button color="primary" [disabled]="isRegisterDisabled()">
           @if (isLoading()) {
             <mat-spinner diameter="16"></mat-spinner>
           } @else {

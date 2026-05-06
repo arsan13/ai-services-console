@@ -3,14 +3,36 @@ import { RoleType } from "../enums/role-type.enum";
 import { Permission } from "./permission.model";
 
 export interface LoginPayload {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface RegisterPayload {
-  fullname: string;
-  username: string;
+  fullName: string;
+  email: string;
   password: string;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface VerifyEmailPayload {
+  token: string;
+}
+
+export interface ResendVerificationPayload {
+  email: string;
 }
 
 export interface AuthResponse {
@@ -19,10 +41,16 @@ export interface AuthResponse {
 }
 
 export interface UserProfile {
-  id?: number;
-  fullName?: string;
-  username?: string;
-  roles?: RoleType[];
-  permissions?: Permission[];
-  providerType?: AuthProvider;
+  id: number;
+  fullName: string;
+  email: string;
+  roles: RoleType[];
+  permissions: Permission[];
+  providerType: AuthProvider;
+  verified: boolean;
+  passwordResetDate: Date | null;
 }
+
+export interface AvailabilityResponse {
+  available: boolean;
+};

@@ -4,7 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { of } from 'rxjs';
 
 import { OauthSuccessComponent } from './oauth-success.component';
-import { AuthService } from '../../../core/services/auth.service';
+import { Oauth2Service } from '../../../core/services/oauth2.service';
 
 describe('OauthSuccessComponent', () => {
   let component: OauthSuccessComponent;
@@ -14,7 +14,10 @@ describe('OauthSuccessComponent', () => {
     await TestBed.configureTestingModule({
       imports: [OauthSuccessComponent],
       providers: [
-        provideRouter([]),
+        provideRouter([
+          { path: 'chat', component: OauthSuccessComponent },
+          { path: 'login', component: OauthSuccessComponent }
+        ]),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -24,9 +27,9 @@ describe('OauthSuccessComponent', () => {
           }
         },
         {
-          provide: AuthService,
+          provide: Oauth2Service,
           useValue: {
-            completeOauth2Login: () => of(null)
+            completeLogin: () => of(null)
           }
         },
         {

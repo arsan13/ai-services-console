@@ -1,0 +1,44 @@
+<section class="auth-shell">
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <mat-card class="auth-layout single-panel">
+    <main class="auth-panel">
+      <p class="eyebrow">Email Verification</p>
+      <h2>Verify Your Email</h2>
+
+      @if (isLoading()) {
+        <div class="verification-state">
+          <mat-spinner diameter="48" class="spinner-center"></mat-spinner>
+          <p class="state-message">Verifying your email...</p>
+        </div>
+      } @else if (isVerified()) {
+        <div class="verification-state success">
+          <div class="success-icon" aria-hidden="true">✓</div>
+          <p class="state-message success-text">Email verified successfully!</p>
+          <p class="state-subtext">Redirecting to chat...</p>
+        </div>
+
+        <div class="alt-actions">
+          <button mat-button (click)="goToChat()">Go to Chat Now</button>
+        </div>
+      } @else if (hasTokenError()) {
+        <div class="error-box" role="alert" aria-live="assertive">
+          Verification link is missing or invalid. Please request a new verification link.
+        </div>
+
+        <div class="alt-actions">
+          <button mat-button (click)="goBack()">{{ backActionLabel }}</button>
+        </div>
+      } @else if (verificationError()) {
+        <div class="error-box" role="alert" aria-live="assertive">
+          {{ verificationError() }}
+        </div>
+
+        <div class="alt-actions">
+          <button mat-button (click)="goBack()">{{ backActionLabel }}</button>
+        </div>
+      }
+    </main>
+  </mat-card>
+</section>

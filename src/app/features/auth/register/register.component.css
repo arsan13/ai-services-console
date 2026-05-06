@@ -154,6 +154,61 @@ h1 {
 	width: 100%;
 }
 
+.email-status-suffix {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 18px;
+	min-height: 18px;
+	padding-right: 6px;
+}
+
+.email-status-suffix--hidden {
+	visibility: hidden;
+}
+
+.email-status-icon {
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+}
+
+.email-status-icon--available {
+	color: color-mix(in srgb, var(--mat-sys-primary) 78%, var(--mat-sys-on-surface) 22%);
+}
+
+.email-status-icon--unavailable {
+	color: color-mix(in srgb, var(--mat-sys-error) 82%, var(--mat-sys-on-surface) 18%);
+}
+
+.email-availability-hint {
+	color: color-mix(in srgb, var(--mat-sys-on-surface-variant) 84%, transparent);
+}
+
+.email-availability-hint--available {
+	color: color-mix(in srgb, var(--mat-sys-primary) 78%, var(--mat-sys-on-surface) 22%);
+}
+
+.email-status-message {
+	display: inline-flex;
+	align-items: flex-start;
+	flex-wrap: nowrap;
+	gap: 0.35rem;
+	line-height: 1.2;
+}
+
+.email-status-message__icon {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	line-height: 1;
+	margin-top: 1px;
+}
+
 .submit-btn {
 	width: 100%;
 	margin-top: 0.3rem;

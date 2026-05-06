@@ -44,12 +44,12 @@ function resolveBackendMessage(errorBody: unknown): string | null {
   }
 
   const maybeWrapper = errorBody as { message?: unknown; error?: unknown };
-  if (typeof maybeWrapper.message === 'string' && maybeWrapper.message.trim().length > 0) {
-    return maybeWrapper.message;
-  }
-
   if (typeof maybeWrapper.error === 'string' && maybeWrapper.error.trim().length > 0) {
     return maybeWrapper.error;
+  }
+
+  if (typeof maybeWrapper.message === 'string' && maybeWrapper.message.trim().length > 0) {
+    return maybeWrapper.message;
   }
 
   return null;
