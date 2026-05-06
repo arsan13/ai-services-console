@@ -50,3 +50,7 @@ export interface UserProfile {
   verified: boolean;
   passwordResetDate: Date | null;
 }
+
+export interface AvailabilityResponse {
+  available: boolean;
+};

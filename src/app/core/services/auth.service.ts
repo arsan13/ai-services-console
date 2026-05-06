@@ -11,7 +11,8 @@ import {
   ResetPasswordPayload,
   UserProfile,
   VerifyEmailPayload,
-  ResendVerificationPayload
+  ResendVerificationPayload,
+  AvailabilityResponse
 } from '../models/auth.model';
 import { UserService } from './user.service';
 
@@ -34,6 +35,14 @@ export class AuthService {
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.authApiUrl}/register`, payload).pipe(
       tap(response => this.applySession(response))
+    );
+  }
+
+  checkEmailAvailability(email: string): Observable<boolean> {
+    return this.http.get<AvailabilityResponse>(`${this.authApiUrl}/availability`, {
+      params: { email }
+    }).pipe(
+      map((response) => response.available)
     );
   }
 
