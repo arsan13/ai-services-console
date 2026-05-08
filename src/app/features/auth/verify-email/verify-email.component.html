@@ -22,6 +22,16 @@
         <div class="alt-actions">
           <button mat-button (click)="goToChat()">Go to Chat Now</button>
         </div>
+      } @else if (isAlreadyVerified()) {
+        <div class="verification-state success">
+          <div class="success-icon" aria-hidden="true">✓</div>
+          <p class="state-message success-text">This email is already verified.</p>
+          <p class="state-subtext">Redirecting to chat...</p>
+        </div>
+
+        <div class="alt-actions">
+          <button mat-button (click)="goToChat()">Go to Chat Now</button>
+        </div>
       } @else if (hasTokenError()) {
         <div class="error-box" role="alert" aria-live="assertive">
           Verification link is missing or invalid. Please request a new verification link.

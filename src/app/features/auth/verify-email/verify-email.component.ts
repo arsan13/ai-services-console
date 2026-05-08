@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
+import { UserService } from '../../../core/services/user.service';
 import { PLATFORM_ID } from '@angular/core';
 
 @Component({
@@ -21,6 +22,7 @@ import { PLATFORM_ID } from '@angular/core';
 })
 export class VerifyEmailComponent {
   private readonly authService = inject(AuthService);
+  private readonly userService = inject(UserService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
@@ -28,6 +30,7 @@ export class VerifyEmailComponent {
 
   readonly isLoading = signal(true);
   readonly isVerified = signal(false);
+  readonly isAlreadyVerified = signal(false);
   readonly hasTokenError = signal(this.token.length === 0);
   readonly verificationError = signal<string | null>(null);
 
@@ -49,9 +52,10 @@ export class VerifyEmailComponent {
       error: (err) => {
         const message = err.message || 'Email verification failed. Please try again.';
 
-        // If backend reports "already verified", treat this as a successful state for UX.
         if (message.toLowerCase().includes('already verified')) {
-          this.markVerifiedAndRedirect();
+          this.verificationError.set(null);
+          this.isAlreadyVerified.set(true);
+          setTimeout(() => this.router.navigate(['/chat']), 3000);
           return;
         }
 
@@ -61,7 +65,13 @@ export class VerifyEmailComponent {
   }
 
   private markVerifiedAndRedirect(): void {
+    const user = this.userService.currentUser();
+    if (user && !user.verified) {
+      this.userService.set({ ...user, verified: true });
+    }
+
     this.verificationError.set(null);
+    this.isAlreadyVerified.set(false);
     this.isVerified.set(true);
     setTimeout(() => this.router.navigate(['/chat']), 3000);
   }

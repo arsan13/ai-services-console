@@ -39,12 +39,14 @@
     <mat-divider />
   }
 
-  <button mat-menu-item (click)="openChangePassword()">
-    <mat-icon>lock_reset</mat-icon>
-    <span>Change password</span>
-  </button>
+  @if (user().hasPassword) {
+    <button mat-menu-item (click)="openChangePassword()">
+      <mat-icon>lock_reset</mat-icon>
+      <span>Change password</span>
+    </button>
 
-  <mat-divider />
+    <mat-divider />
+  }
 
   <button mat-menu-item (click)="logout()">
     <mat-icon>logout</mat-icon>
