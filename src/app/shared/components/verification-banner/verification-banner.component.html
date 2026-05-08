@@ -1,0 +1,32 @@
+<div class="verification-banner" role="status" aria-live="polite" aria-label="Email verification reminder">
+  <div class="banner-content">
+    <mat-icon class="banner-icon">mail_outline</mat-icon>
+    <div class="banner-text">
+      <p class="banner-title">Verify your email</p>
+      @if (source() === 'register') {
+        <p class="banner-message">Activate your account to access the features. Check your inbox for a verification link to fully activate your account.</p>
+      } @else {
+        <p class="banner-message">
+          Activate your account to access the features by verifying your email.
+          <a
+            href="#"
+            (click)="resendVerification($event)"
+            class="resend-link"
+            [class.resend-link-disabled]="resendLoading()"
+            [attr.aria-disabled]="resendLoading()"
+          >
+            {{ resendLoading() ? 'Sending verification link...' : 'Send verification link' }}
+          </a>
+        </p>
+        @if (resendStatus() !== 'idle' && resendStatusMessage()) {
+          <p class="resend-status" [class.resend-status-success]="resendStatus() === 'success'" [class.resend-status-error]="resendStatus() === 'error'">
+            {{ resendStatusMessage() }}
+          </p>
+        }
+      }
+    </div>
+  </div>
+  <button mat-icon-button (click)="onDismiss()" aria-label="Dismiss verification reminder" class="dismiss-btn">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>

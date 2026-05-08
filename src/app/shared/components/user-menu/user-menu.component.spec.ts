@@ -38,7 +38,8 @@ describe('UserMenuComponent', () => {
       permissions: [],
       providerType: AuthProvider.LOCAL,
       verified: true,
-      passwordResetDate: null
+      passwordResetDate: null,
+      hasPassword: true
     });
     component = fixture.componentInstance;
     await fixture.whenStable();

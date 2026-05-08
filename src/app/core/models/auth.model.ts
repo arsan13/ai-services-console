@@ -49,6 +49,7 @@ export interface UserProfile {
   providerType: AuthProvider;
   verified: boolean;
   passwordResetDate: Date | null;
+  hasPassword: boolean;
 }
 
 export interface AvailabilityResponse {
