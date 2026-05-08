@@ -166,7 +166,7 @@ node dist/ai-services-console/server/server.mjs
 
 - Email verification link not received:
 	- Check spam/junk folder
-	- Use the "Resend verification link" option in the verification banner
+	- Use the "Send verification link" option in the verification banner
 
 - Reset/verify token rejected:
 	- Tokens are single-use and time-limited; request a new one if expired
