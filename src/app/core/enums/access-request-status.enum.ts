@@ -1,0 +1,7 @@
+export enum AccessRequestStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  CANCELLED = 'CANCELLED',
+  REVOKED = 'REVOKED',
+}

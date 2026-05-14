@@ -52,6 +52,12 @@ body {
   // Reset the user agent margin.
   margin: 0;
   height: 100%;
+  transition: opacity 0.26s ease, transform 0.26s ease;
+}
+
+body.app-route-transition-out {
+  opacity: 0.88;
+  transform: translateY(6px);
 }
 
 html.app-theme-dark body {

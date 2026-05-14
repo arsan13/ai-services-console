@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -15,6 +15,7 @@ import { AuthProvider } from '../../../core/enums/auth-provider.enum';
 import { Oauth2Service } from '../../../core/services/oauth2.service';
 import { PasswordVisibilityDirective } from '../../../shared/directives/password-visibility.directive';
 import { PasswordVisibilityToggleComponent } from '../../../shared/components/password-visibility-toggle/password-visibility-toggle.component';
+import { NavigationTransitionService } from '../../../core/services/navigation-transition.service';
 
 type EmailAvailabilityStatus = 'idle' | 'checking' | 'available' | 'unavailable';
 
@@ -38,6 +39,8 @@ export class RegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly oauth2Service = inject(Oauth2Service);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly navigationTransition = inject(NavigationTransitionService);
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
   readonly isLoading = signal(false);
@@ -79,7 +82,9 @@ export class RegisterComponent {
       })
     ).subscribe({
       next: () => {
-        this.router.navigate(['/']);
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        const targetUrl = returnUrl && returnUrl.startsWith('/') ? returnUrl : '/';
+        this.navigationTransition.navigateByUrl(this.router, targetUrl);
       },
       error: () => {
         sessionStorage.removeItem('verificationSource');
@@ -88,7 +93,7 @@ export class RegisterComponent {
   }
 
   login(): void {
-    this.router.navigate(['/login']);
+    this.navigationTransition.navigate(this.router, ['/login']);
   }
 
   registerWithGoogle(): void {

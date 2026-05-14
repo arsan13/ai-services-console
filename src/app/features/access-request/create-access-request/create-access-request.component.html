@@ -1,0 +1,96 @@
+<h2>Request Access</h2>
+
+<div class="container" [class.transitioning-out]="isNavigatingToRequests()">
+  @if (successMessage()) {
+    <p class="success-note" aria-live="polite">{{ successMessage() }} Redirecting to My Requests...</p>
+  }
+
+  <!-- Assigned Permissions/Roles Chips -->
+  @if (assignedPermissions.size > 0 || assignedRoles.size > 0) {
+    <div class="assigned-chips">
+      @if (assignedPermissions.size > 0) {
+        <div class="chip-group">
+          <span class="chip-label">Assigned Permissions:</span>
+          <mat-chip-listbox>
+            @for (permission of [...assignedPermissions]; track permission) {
+              <mat-chip color="primary" selected>{{ permission }}</mat-chip>
+            }
+          </mat-chip-listbox>
+        </div>
+      }
+      @if (assignedRoles.size > 0) {
+        <div class="chip-group">
+          <span class="chip-label">Assigned Roles:</span>
+          <mat-chip-listbox>
+            @for (role of [...assignedRoles]; track role) {
+              <mat-chip color="accent" selected>{{ role }}</mat-chip>
+            }
+          </mat-chip-listbox>
+        </div>
+      }
+    </div>
+  }
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Your Request Comment</mat-label>
+      <textarea
+        matInput
+        formControlName="requesterComment"
+        rows="4"
+        placeholder="Describe why you need this access">
+      </textarea>
+      @if (form.get('requesterComment')?.invalid && form.get('requesterComment')?.touched) {
+        <mat-error>Comment is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Permissions</mat-label>
+      <mat-select formControlName="permissions" multiple>
+        @for (permission of availablePermissions; track permission) {
+          <mat-option [value]="permission" [disabled]="isPermissionAssigned(permission)">
+            {{ permission }} @if (isPermissionAssigned(permission)) { (Already assigned) }
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Roles</mat-label>
+      <mat-select formControlName="roles" multiple>
+        @for (role of availableRoles; track role) {
+          <mat-option [value]="role" [disabled]="isRoleAssigned(role)">
+            {{ role }} @if (isRoleAssigned(role)) { (Already assigned) }
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+
+    @if (form.hasError('accessTargetRequired') && (controls.permissions.touched || controls.roles.touched || form.touched)) {
+      <p class="selection-error">Select at least one permission or role.</p>
+    }
+
+
+    <p class="helper-text">Selecting a role auto-adds its mapped permissions. You can still deselect permissions manually. Already assigned permissions or roles are disabled. Admin role cannot be requested.</p>
+
+    <div class="button-group">
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="isLoading() || form.invalid">
+        @if (isLoading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        }
+        Request Access
+      </button>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="onCancel()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

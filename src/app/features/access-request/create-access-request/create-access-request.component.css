@@ -1,0 +1,82 @@
+.assigned-chips {
+  margin-bottom: 1.5rem;
+}
+
+.chip-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chip-label {
+  font-weight: 500;
+  margin-right: 0.5rem;
+  color: #444;
+}
+
+mat-chip-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+mat-chip {
+  font-size: 0.92rem;
+  padding: 0 0.5rem;
+}
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.container.transitioning-out {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+.success-note {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid #b7e4c7;
+  background: #ecfdf3;
+  color: #1f6f46;
+  font-size: 0.9rem;
+}
+
+h2 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.selection-error {
+  margin: -0.75rem 0 0.75rem;
+  font-size: 0.8rem;
+  color: #b3261e;
+}
+
+.helper-text {
+  margin: -0.25rem 0 1.25rem;
+  font-size: 0.82rem;
+  color: #666;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+button {
+  min-width: 120px;
+}
