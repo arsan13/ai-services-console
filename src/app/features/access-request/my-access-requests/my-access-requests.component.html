@@ -28,121 +28,123 @@
       </mat-card-content>
     </mat-card>
   } @else {
-    <div class="table-shell">
-      <div class="table-header">
-        <span>Request</span>
-        <span>Dates</span>
-        <span>Reviewer</span>
-        <span>Access Scope</span>
-        <span>Comments</span>
-        <span>Actions</span>
-      </div>
+    <div class="table-region">
+      <div class="table-shell">
+        <div class="table-header">
+          <span>Request</span>
+          <span>Dates</span>
+          <span>Reviewer</span>
+          <span>Access Scope</span>
+          <span>Comments</span>
+          <span>Actions</span>
+        </div>
 
-      <div class="table-body">
-        @for (request of requests(); track request.id) {
-          <article class="request-row">
-            <div class="summary-grid">
-              <div class="request-col">
-                <span class="request-id">#{{ request.id }}</span>
-                <span
-                  class="status-pill"
-                  [class.status-pending]="request.status === 'PENDING'"
-                  [class.status-approved]="request.status === 'APPROVED'"
-                  [class.status-rejected]="request.status === 'REJECTED'"
-                  [class.status-revoked]="request.status === 'REVOKED'"
-                  [class.status-cancelled]="request.status === 'CANCELLED'"
-                >
-                  {{ request.status }}
-                </span>
-              </div>
+        <div class="table-body">
+          @for (request of requests(); track request.id) {
+            <article class="request-row">
+              <div class="summary-grid">
+                <div class="request-col">
+                  <span class="request-id">#{{ request.id }}</span>
+                  <span
+                    class="status-pill"
+                    [class.status-pending]="request.status === 'PENDING'"
+                    [class.status-approved]="request.status === 'APPROVED'"
+                    [class.status-rejected]="request.status === 'REJECTED'"
+                    [class.status-revoked]="request.status === 'REVOKED'"
+                    [class.status-cancelled]="request.status === 'CANCELLED'"
+                  >
+                    {{ request.status }}
+                  </span>
+                </div>
 
-              <div class="dates-col">
-                <p><strong>Requested:</strong> {{ request.requestedDate | date:'short' }}</p>
-                <p><strong>Reviewed:</strong> {{ request.reviewedDate ? (request.reviewedDate | date:'short') : 'Pending' }}</p>
-              </div>
+                <div class="dates-col">
+                  <p><strong>Requested:</strong> {{ request.requestedDate | date:'short' }}</p>
+                  <p><strong>Reviewed:</strong> {{ request.reviewedDate ? (request.reviewedDate | date:'short') : 'Pending' }}</p>
+                </div>
 
-              <div class="reviewer-col">
-                {{ request.reviewerName || 'Not assigned' }}
-              </div>
+                <div class="reviewer-col">
+                  {{ request.reviewerName || 'Not assigned' }}
+                </div>
 
-              <div class="scope-col">
-                <div class="tags compact">
-                  @for (permission of request.permissions | slice:0:2; track permission) {
-                    <span class="tag permission-tag">{{ permission }}</span>
+                <div class="scope-col">
+                  <div class="tags compact">
+                    @for (permission of request.permissions | slice:0:2; track permission) {
+                      <span class="tag permission-tag">{{ permission }}</span>
+                    }
+                    @for (role of request.roles | slice:0:2; track role) {
+                      <span class="tag role-tag">{{ role }}</span>
+                    }
+                    @if (request.permissions.length + request.roles.length > 4) {
+                      <span class="tag neutral-tag">+{{ request.permissions.length + request.roles.length - 4 }} more</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="comments-col">
+                  <p class="comment-preview">{{ request.requesterComment || 'No requester comment.' }}</p>
+                </div>
+
+                <div class="actions-col">
+                  @if (request.status === 'PENDING') {
+                    <button mat-stroked-button color="warn" (click)="onCancel(request.id)">Cancel</button>
                   }
-                  @for (role of request.roles | slice:0:2; track role) {
-                    <span class="tag role-tag">{{ role }}</span>
-                  }
-                  @if (request.permissions.length + request.roles.length > 4) {
-                    <span class="tag neutral-tag">+{{ request.permissions.length + request.roles.length - 4 }} more</span>
-                  }
+                  <button mat-button (click)="onViewDetails(request.id)">View</button>
                 </div>
               </div>
 
-              <div class="comments-col">
-                <p class="comment-preview">{{ request.requesterComment || 'No requester comment.' }}</p>
-              </div>
+              <details class="details-panel">
+                <summary>Full details</summary>
 
-              <div class="actions-col">
-                @if (request.status === 'PENDING') {
-                  <button mat-stroked-button color="warn" (click)="onCancel(request.id)">Cancel</button>
-                }
-                <button mat-button (click)="onViewDetails(request.id)">View</button>
-              </div>
-            </div>
+                <div class="details-grid">
+                  <section>
+                    <h4>Your Comment</h4>
+                    <p class="detail-comment">{{ request.requesterComment || 'No requester comment.' }}</p>
+                  </section>
 
-            <details class="details-panel">
-              <summary>Full details</summary>
+                  <section>
+                    <h4>Reviewer Comment</h4>
+                    <p class="detail-comment reviewer">{{ request.reviewerComment || 'No reviewer comment yet.' }}</p>
+                  </section>
 
-              <div class="details-grid">
-                <section>
-                  <h4>Your Comment</h4>
-                  <p class="detail-comment">{{ request.requesterComment || 'No requester comment.' }}</p>
-                </section>
+                  <section>
+                    <h4>Permissions</h4>
+                    <div class="tags">
+                      @for (permission of request.permissions; track permission) {
+                        <span class="tag permission-tag">{{ permission }}</span>
+                      }
+                      @if (request.permissions.length === 0) {
+                        <span class="empty-inline">No permissions requested.</span>
+                      }
+                    </div>
+                  </section>
 
-                <section>
-                  <h4>Reviewer Comment</h4>
-                  <p class="detail-comment reviewer">{{ request.reviewerComment || 'No reviewer comment yet.' }}</p>
-                </section>
-
-                <section>
-                  <h4>Permissions</h4>
-                  <div class="tags">
-                    @for (permission of request.permissions; track permission) {
-                      <span class="tag permission-tag">{{ permission }}</span>
-                    }
-                    @if (request.permissions.length === 0) {
-                      <span class="empty-inline">No permissions requested.</span>
-                    }
-                  </div>
-                </section>
-
-                <section>
-                  <h4>Roles</h4>
-                  <div class="tags">
-                    @for (role of request.roles; track role) {
-                      <span class="tag role-tag">{{ role }}</span>
-                    }
-                    @if (request.roles.length === 0) {
-                      <span class="empty-inline">No roles requested.</span>
-                    }
-                  </div>
-                </section>
-              </div>
-            </details>
-          </article>
-        }
+                  <section>
+                    <h4>Roles</h4>
+                    <div class="tags">
+                      @for (role of request.roles; track role) {
+                        <span class="tag role-tag">{{ role }}</span>
+                      }
+                      @if (request.roles.length === 0) {
+                        <span class="empty-inline">No roles requested.</span>
+                      }
+                    </div>
+                  </section>
+                </div>
+              </details>
+            </article>
+          }
+        </div>
       </div>
-    </div>
 
-    <div class="pagination">
-      <button mat-icon-button [disabled]="currentPage() === 0" (click)="onPreviousPage()">
-        <mat-icon>chevron_left</mat-icon>
-      </button>
-      <span class="page-info">Page {{ currentPage() + 1 }} of {{ totalPages() }}</span>
-      <button mat-icon-button [disabled]="currentPage() >= totalPages() - 1" (click)="onNextPage()">
-        <mat-icon>chevron_right</mat-icon>
-      </button>
+      <div class="pagination">
+        <button mat-icon-button [disabled]="currentPage() === 0" (click)="onPreviousPage()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="page-info">Page {{ currentPage() + 1 }} of {{ totalPages() }}</span>
+        <button mat-icon-button [disabled]="currentPage() >= totalPages() - 1" (click)="onNextPage()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
     </div>
   }
 </div>
