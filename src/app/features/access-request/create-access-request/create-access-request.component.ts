@@ -134,6 +134,32 @@ export class CreateAccessRequestComponent implements OnInit {
       });
   }
 
+  onRoleChange(event: Event, role: RoleType): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    const currentRoles = new Set(this.controls.roles.value ?? []);
+
+    if (isChecked) {
+      currentRoles.add(role);
+    } else {
+      currentRoles.delete(role);
+    }
+
+    this.controls.roles.setValue([...currentRoles]);
+  }
+
+  onPermissionChange(event: Event, permission: string): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    const currentPermissions = new Set(this.controls.permissions.value ?? []);
+
+    if (isChecked) {
+      currentPermissions.add(permission);
+    } else {
+      currentPermissions.delete(permission);
+    }
+
+    this.controls.permissions.setValue([...currentPermissions]);
+  }
+
   private atLeastOneAccessTargetValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const permissions = (control.get('permissions')?.value ?? []) as string[];
