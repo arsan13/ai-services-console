@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   UserAccessRequestResponse,
-  CreateAccessRequestPayload
+  CreateAccessRequestPayload,
+  PendingRolesPermissions
 } from '../models/access-request.model';
 import { Page } from '../models/page.model';
 import { AccessRequestStatus } from '../enums/access-request-status.enum';
@@ -40,6 +41,10 @@ export class UserAccessRequestService {
 
   getAccessRequestById(requestId: number): Observable<UserAccessRequestResponse> {
     return this.http.get<UserAccessRequestResponse>(`${this.apiUrl}/${requestId}`);
+  }
+
+  getPendingRolesPermissions(): Observable<PendingRolesPermissions> {
+    return this.http.get<PendingRolesPermissions>(`${this.apiUrl}/pending/roles-permissions`);
   }
 
   cancelAccessRequest(requestId: number): Observable<void> {

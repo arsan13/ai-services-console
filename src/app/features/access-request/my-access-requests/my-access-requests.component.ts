@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { finalize } from 'rxjs';
 import { UserAccessRequestService } from '../../../core/services/user-access-request.service';
+import { ConfirmationDialogService } from '../../../core/services/confirmation-dialog.service';
 import { UserAccessRequestResponse } from '../../../core/models/access-request.model';
 import { UserService } from '../../../core/services/user.service';
 import { PERMISSIONS } from '../../../core/models/permission.model';
@@ -20,6 +22,7 @@ import { ACCESS_REQUEST_PAGE_SIZE } from '../access-request-page-size';
     CommonModule,
     MatCardModule,
     MatButtonModule,
+    MatDialogModule,
     MatIconModule,
     MatProgressSpinnerModule,
     MatSnackBarModule
@@ -32,6 +35,7 @@ export class MyAccessRequestsComponent implements OnInit {
   private readonly accessRequestService = inject(UserAccessRequestService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly confirmationDialog = inject(ConfirmationDialogService);
   private readonly userService = inject(UserService);
 
   readonly isLoading = signal(false);
@@ -99,7 +103,17 @@ export class MyAccessRequestsComponent implements OnInit {
   }
 
   onCancel(requestId: number): void {
-    if (confirm('Are you sure you want to cancel this request?')) {
+    this.confirmationDialog.confirm({
+      title: 'Cancel Request',
+      message: 'Are you sure you want to cancel this access request? This action cannot be undone.',
+      actionLabel: 'Cancel Request',
+      cancelLabel: 'Keep Request',
+      isDestructive: true
+    }).subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
+
       this.accessRequestService.cancelAccessRequest(requestId)
         .subscribe({
           next: () => {
@@ -111,7 +125,7 @@ export class MyAccessRequestsComponent implements OnInit {
             console.error('Error cancelling request:', err);
           }
         });
-    }
+    });
   }
 
   onPreviousPage(): void {

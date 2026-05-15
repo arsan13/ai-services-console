@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,6 +12,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { finalize } from 'rxjs';
 import { AdminAccessRequestService } from '../../../core/services/admin-access-request.service';
+import { ConfirmationDialogService } from '../../../core/services/confirmation-dialog.service';
 import { UserService } from '../../../core/services/user.service';
 import { PERMISSIONS } from '../../../core/models/permission.model';
 import { ACCESS_REQUEST_PAGE_SIZE, ACCESS_REQUEST_STATUS_OPTIONS } from '../access-request-constants';
@@ -25,6 +27,7 @@ type AdminFilterStatus = AccessRequestStatus | 'ALL';
     CommonModule,
     MatCardModule,
     MatButtonModule,
+    MatDialogModule,
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
@@ -40,6 +43,7 @@ export class AdminApprovalsComponent implements OnInit {
   private static readonly ACTION_TRANSITION_DELAY_MS = 450;
 
   private readonly accessRequestService = inject(AdminAccessRequestService);
+  private readonly confirmationDialog = inject(ConfirmationDialogService);
   private readonly userService = inject(UserService);
   private readonly snackBar = inject(MatSnackBar);
 
@@ -166,51 +170,67 @@ export class AdminApprovalsComponent implements OnInit {
   onReject(requestId: number): void {
     const comment = this.getReviewerComment(requestId);
 
-    if (!confirm('Are you sure you want to reject this request?')) {
-      return;
-    }
+    this.confirmationDialog.confirm({
+      title: 'Reject Request',
+      message: 'Are you sure you want to reject this access request? This action cannot be undone.',
+      actionLabel: 'Reject',
+      cancelLabel: 'Cancel',
+      isDestructive: true
+    }).subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
 
-    this.setProcessing(requestId, true);
-    this.accessRequestService.reviewAccessRequest({
-      requestId,
-      status: AccessRequestStatus.REJECTED,
-      reviewerComment: comment
-    })
-      .pipe(
-        finalize(() => this.setProcessing(requestId, false))
-      )
-      .subscribe({
-        next: () => {
-          this.handleSuccessfulActionTransition(requestId, 'Access request rejected successfully');
-        },
-        error: (err) => {
-          this.snackBar.open('Failed to reject request', 'Close', { duration: 5000 });
-          console.error('Error rejecting request:', err);
-        }
-      });
+      this.setProcessing(requestId, true);
+      this.accessRequestService.reviewAccessRequest({
+        requestId,
+        status: AccessRequestStatus.REJECTED,
+        reviewerComment: comment
+      })
+        .pipe(
+          finalize(() => this.setProcessing(requestId, false))
+        )
+        .subscribe({
+          next: () => {
+            this.handleSuccessfulActionTransition(requestId, 'Access request rejected successfully');
+          },
+          error: (err) => {
+            this.snackBar.open('Failed to reject request', 'Close', { duration: 5000 });
+            console.error('Error rejecting request:', err);
+          }
+        });
+    });
   }
 
   onRevoke(requestId: number): void {
     const comment = this.getReviewerComment(requestId);
 
-    if (!confirm('Are you sure you want to revoke this access?')) {
-      return;
-    }
+    this.confirmationDialog.confirm({
+      title: 'Revoke Access',
+      message: 'Are you sure you want to revoke this access? The user will lose all associated permissions immediately.',
+      actionLabel: 'Revoke',
+      cancelLabel: 'Cancel',
+      isDestructive: true
+    }).subscribe((confirmed) => {
+      if (!confirmed) {
+        return;
+      }
 
-    this.setProcessing(requestId, true);
-    this.accessRequestService.revokeAccessRequest({ requestId, reviewerComment: comment })
-      .pipe(
-        finalize(() => this.setProcessing(requestId, false))
-      )
-      .subscribe({
-        next: () => {
-          this.handleSuccessfulActionTransition(requestId, 'Access revoked successfully');
-        },
-        error: (err) => {
-          this.snackBar.open('Failed to revoke access', 'Close', { duration: 5000 });
-          console.error('Error revoking access:', err);
-        }
-      });
+      this.setProcessing(requestId, true);
+      this.accessRequestService.revokeAccessRequest({ requestId, reviewerComment: comment })
+        .pipe(
+          finalize(() => this.setProcessing(requestId, false))
+        )
+        .subscribe({
+          next: () => {
+            this.handleSuccessfulActionTransition(requestId, 'Access revoked successfully');
+          },
+          error: (err) => {
+            this.snackBar.open('Failed to revoke access', 'Close', { duration: 5000 });
+            console.error('Error revoking access:', err);
+          }
+        });
+    });
   }
 
   onPreviousPage(): void {

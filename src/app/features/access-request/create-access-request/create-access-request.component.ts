@@ -50,9 +50,12 @@ export class CreateAccessRequestComponent implements OnInit {
   readonly availablePermissions: Permission[] = Object.values(PERMISSIONS);
   readonly availablePermissionSet = new Set<string>(this.availablePermissions);
   readonly availableRoles = Object.values(RoleType).filter((role) => role !== RoleType.ROLE_ADMIN);
+  readonly availableRoleSet = new Set<RoleType>(this.availableRoles);
   readonly currentUser = this.userService.currentUser();
   readonly assignedPermissions = new Set<string>(this.currentUser?.permissions ?? []);
   readonly assignedRoles = new Set(this.currentUser?.roles ?? []);
+  readonly pendingPermissions = signal<ReadonlySet<string>>(new Set<string>());
+  readonly pendingRoles = signal<ReadonlySet<RoleType>>(new Set<RoleType>());
   readonly rolePermissionsMap = signal<RolePermissionsMap>({});
 
   private previousSelectedRoles = new Set<RoleType>();
@@ -69,6 +72,7 @@ export class CreateAccessRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadRolePermissionsMap();
+    this.loadPendingRolesAndPermissions();
     this.bindRoleSelectionToPermissions();
   }
 
@@ -76,8 +80,24 @@ export class CreateAccessRequestComponent implements OnInit {
     return this.assignedPermissions.has(permission);
   }
 
+  isPermissionPending(permission: Permission): boolean {
+    return this.pendingPermissions().has(permission);
+  }
+
+  isPermissionUnavailable(permission: Permission): boolean {
+    return this.isPermissionAssigned(permission) || this.isPermissionPending(permission);
+  }
+
   isRoleAssigned(role: RoleType): boolean {
     return this.assignedRoles.has(role);
+  }
+
+  isRolePending(role: RoleType): boolean {
+    return this.pendingRoles().has(role);
+  }
+
+  isRoleUnavailable(role: RoleType): boolean {
+    return this.isRoleAssigned(role) || this.isRolePending(role);
   }
 
   private loadRolePermissionsMap(): void {
@@ -91,6 +111,48 @@ export class CreateAccessRequestComponent implements OnInit {
           console.error('Error loading role permission mapping:', err);
         }
       });
+  }
+
+  private loadPendingRolesAndPermissions(): void {
+    this.accessRequestService.getPendingRolesPermissions()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ({ roles, permissions }) => {
+          const validPendingRoles = new Set<RoleType>(
+            (roles ?? []).filter((role): role is RoleType => this.availableRoleSet.has(role))
+          );
+
+          const validPendingPermissions = new Set<string>(
+            (permissions ?? []).filter((permission) => this.availablePermissionSet.has(permission))
+          );
+
+          this.pendingRoles.set(validPendingRoles);
+          this.pendingPermissions.set(validPendingPermissions);
+          this.syncSelectionWithUnavailableTargets();
+        },
+        error: (err) => {
+          console.error('Error loading pending roles and permissions:', err);
+          this.pendingRoles.set(new Set<RoleType>());
+          this.pendingPermissions.set(new Set<string>());
+        }
+      });
+  }
+
+  private syncSelectionWithUnavailableTargets(): void {
+    const selectedRoles = this.controls.roles.value ?? [];
+    const selectedPermissions = this.controls.permissions.value ?? [];
+
+    const allowedRoles = selectedRoles.filter((role) => !this.isRoleUnavailable(role));
+    const allowedPermissions = selectedPermissions.filter((permission) => !this.isPermissionUnavailable(permission as Permission));
+
+    if (allowedRoles.length !== selectedRoles.length) {
+      this.controls.roles.setValue(allowedRoles, { emitEvent: false });
+      this.previousSelectedRoles = new Set(allowedRoles);
+    }
+
+    if (allowedPermissions.length !== selectedPermissions.length) {
+      this.controls.permissions.setValue(allowedPermissions, { emitEvent: false });
+    }
   }
 
   private bindRoleSelectionToPermissions(): void {
@@ -108,7 +170,11 @@ export class CreateAccessRequestComponent implements OnInit {
           for (const role of newlyAddedRoles) {
             const mappedPermissions = mapping[role] ?? [];
             for (const permission of mappedPermissions) {
-              if (this.availablePermissionSet.has(permission) && !this.assignedPermissions.has(permission)) {
+              if (
+                this.availablePermissionSet.has(permission)
+                && !this.assignedPermissions.has(permission)
+                && !this.pendingPermissions().has(permission)
+              ) {
                 permissionSet.add(permission);
               }
             }
@@ -135,6 +201,10 @@ export class CreateAccessRequestComponent implements OnInit {
   }
 
   onRoleChange(event: Event, role: RoleType): void {
+    if (this.isRoleUnavailable(role)) {
+      return;
+    }
+
     const isChecked = (event.target as HTMLInputElement).checked;
     const currentRoles = new Set(this.controls.roles.value ?? []);
 
@@ -148,6 +218,10 @@ export class CreateAccessRequestComponent implements OnInit {
   }
 
   onPermissionChange(event: Event, permission: string): void {
+    if (this.isPermissionUnavailable(permission as Permission)) {
+      return;
+    }
+
     const isChecked = (event.target as HTMLInputElement).checked;
     const currentPermissions = new Set(this.controls.permissions.value ?? []);
 

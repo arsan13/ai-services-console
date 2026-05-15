@@ -7,6 +7,11 @@ export interface CreateAccessRequestPayload {
   roles?: string[];
 }
 
+export interface PendingRolesPermissions {
+  roles: RoleType[];
+  permissions: string[];
+}
+
 export interface UserAccessRequestResponse {
   id: number;
   reviewerName: string;
