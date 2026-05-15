@@ -7,6 +7,10 @@
     <div class="toolbar-actions">
       <span class="metric-pill">Visible: {{ requests().length }}</span>
       <span class="metric-pill">Page size: {{ pageSize() }}</span>
+      <button mat-stroked-button type="button" (click)="onRefresh()" [disabled]="isLoading()" aria-label="Refresh table">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
       @if (!isAccessApprover()) {
         <button mat-raised-button color="primary" (click)="onCreateNew()">+ New Request</button>
       }

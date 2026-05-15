@@ -14,7 +14,7 @@ import { ConfirmationDialogService } from '../../../core/services/confirmation-d
 import { UserAccessRequestResponse } from '../../../core/models/access-request.model';
 import { UserService } from '../../../core/services/user.service';
 import { PERMISSIONS } from '../../../core/models/permission.model';
-import { ACCESS_REQUEST_PAGE_SIZE } from '../access-request-page-size';
+import { ACCESS_REQUEST_PAGE_SIZE } from '../access-request-constants';
 
 @Component({
   selector: 'app-my-access-requests',
@@ -66,7 +66,7 @@ export class MyAccessRequestsComponent implements OnInit {
     this.loadRequests();
   }
 
-  private loadRequests(): void {
+  private loadRequests(showRefreshToast: boolean = false): void {
     this.isLoading.set(true);
     this.accessRequestService.getAllAccessRequests(this.currentPage(), this.pageSize())
       .pipe(
@@ -76,6 +76,9 @@ export class MyAccessRequestsComponent implements OnInit {
         next: (page) => {
           this.requests.set(page.content);
           this.totalPages.set(page.totalPages);
+          if (showRefreshToast) {
+            this.snackBar.open('Table refreshed', 'Close', { duration: 2000 });
+          }
         },
         error: (err) => {
           if (!this.isExpectedAccessRestriction(err)) {
@@ -100,6 +103,10 @@ export class MyAccessRequestsComponent implements OnInit {
 
   onViewDetails(requestId: number): void {
     this.router.navigate(['/access-requests', requestId]);
+  }
+
+  onRefresh(): void {
+    this.loadRequests(true);
   }
 
   onCancel(requestId: number): void {
