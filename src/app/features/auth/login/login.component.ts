@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormField, MatInputModule } from '@angular/material/input';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,6 +11,7 @@ import { finalize } from 'rxjs';
 import { Oauth2Service } from '../../../core/services/oauth2.service';
 import { PasswordVisibilityDirective } from '../../../shared/directives/password-visibility.directive';
 import { PasswordVisibilityToggleComponent } from '../../../shared/components/password-visibility-toggle/password-visibility-toggle.component';
+import { NavigationTransitionService } from '../../../core/services/navigation-transition.service';
 
 @Component({
   selector: 'app-login',
@@ -31,6 +32,8 @@ export class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly oauth2Service = inject(Oauth2Service);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly navigationTransition = inject(NavigationTransitionService);
   readonly isLoading = signal(false);
   private readonly fb = inject(FormBuilder);
   readonly form = this.fb.nonNullable.group({
@@ -59,18 +62,20 @@ export class LoginComponent {
       .subscribe({
         next: () => {
           sessionStorage.setItem('verificationSource', 'login');
-          this.router.navigate(['/']);
+          const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+          const targetUrl = returnUrl && returnUrl.startsWith('/') ? returnUrl : '/';
+          this.navigationTransition.navigateByUrl(this.router, targetUrl);
         },
         error: () => {}
       });
   }
 
   register(): void {
-    this.router.navigate(['/register']);
+    this.navigationTransition.navigate(this.router, ['/register']);
   }
 
   forgotPassword(): void {
-    this.router.navigate(['/forgot-password']);
+    this.navigationTransition.navigate(this.router, ['/forgot-password']);
   }
 
   loginWithGoogle(): void {

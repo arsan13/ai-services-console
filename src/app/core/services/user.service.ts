@@ -40,7 +40,15 @@ export class UserService {
 
   hasPermission(permission: Permission): boolean {
     const permissions = this.currentUserSignal()?.permissions ?? [];
-    return permissions.some((userPermission) => userPermission === permission);
+    return permissions.some((userPermission) => this.matchPermission(userPermission, permission));
+  }
+
+  private matchPermission(userPermission: string, requiredPermission: string): boolean {
+    return this.canonicalPermission(userPermission) === this.canonicalPermission(requiredPermission);
+  }
+
+  private canonicalPermission(permission: string): string {
+    return permission.replace('request_access', 'request:access').trim().toLowerCase();
   }
 
   clear(): void {

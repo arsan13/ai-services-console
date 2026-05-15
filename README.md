@@ -23,6 +23,7 @@ AI Services Console provides:
 - Verification banner shown to unverified users with inline resend functionality
 - Permission-aware multi-chat type support (`/ai/chat/types`)
 - Chat UI with chat type selector, access-aware empty states, stop/clear actions, and markdown responses
+- **Access Request Module**: Role/permission request workflow with user creation, admin approval/revocation, and status tracking
 - Light/Dark theme toggle with persisted user preference
 - Responsive auth and chat screens (mobile-first behavior for auth side panel)
 - Lazy-loaded route components for improved initial load performance
@@ -99,6 +100,11 @@ If your backend URL changes, update the environment files as needed.
 | `/oauth-error` | Public | OAuth2 callback error handler |
 | `/change-password` | Authenticated | Change password while logged in |
 | `/chat` | Authenticated | AI chat interface |
+| `/access-requests` | Authenticated | Smart redirect to user or admin panel based on permissions |
+| `/access-requests/create` | Authenticated | Create a new role/permission request |
+| `/access-requests/my-requests` | Authenticated | View user's access request history and manage pending requests |
+| `/access-requests/viewer` | Authenticated (`request:access:view`) | Read-only view of all access requests |
+| `/access-requests/admin` | Admin (require `request:access:approve`) | Admin dashboard to review, approve, and revoke access requests |
 
 ## Auth Flows
 
@@ -118,6 +124,31 @@ Authenticated users can change their password at `/change-password` by providing
 
 ### OAuth2
 Google (and other configured providers) are supported. After the provider callback, the app lands on `/oauth-success` to complete the session, or `/oauth-error` if the flow fails.
+
+## Access Request Module
+
+The Access Request module allows users to request additional roles or permissions and lets authorized reviewers process those requests.
+
+### User Access Requests
+
+Users can:
+
+- Create a request from `/access-requests/create`
+- View their own request history from `/access-requests/my-requests`
+- Cancel pending requests
+
+### Review and Approval
+
+Users with elevated access can view all requests and review them from `/access-requests/admin`.
+View-only users can access `/access-requests/viewer` to see all requests without approval actions.
+
+Request statuses include: `PENDING`, `APPROVED`, `REJECTED`, `CANCELED`, and `REVOKED`.
+
+### Permissions
+
+- `request:access:create`: Create access requests
+- `request:access:view`: View requests
+- `request:access:approve`: Approve, reject, or revoke requests
 
 ## Build
 
@@ -180,6 +211,24 @@ node dist/ai-services-console/server/server.mjs
 
 - Theme does not persist:
 	- Verify browser localStorage is enabled (theme key: `app-theme`)
+
+- Access Request routes not accessible:
+	- Verify user is authenticated (logged in with verified email)
+	- Verify backend API endpoints are available under `/api/me/access-requests` and `/api/admin/access-requests`
+	- For admin dashboard, verify user has `request:access:approve` permission (returned in `/me` profile)
+
+- Admin dashboard shows empty list:
+	- Check that status filter is set to "ALL" (default shows all requests)
+	- Verify backend has access requests in the database
+	- Check browser console for HTTP errors
+
+- "Cannot cancel request" error:
+	- Only PENDING requests can be canceled
+	- APPROVED, REJECTED, REVOKED, and CANCELED requests are immutable
+
+- Access request permissions not updated after approval:
+	- Backend service updates permissions; frontend may need to refresh (`F5` or re-login)
+	- Verify backend approval endpoint is accessible (`PUT /api/admin/access-requests/review`)
 
 ## License
 

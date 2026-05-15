@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserProfile } from '../../../core/models/auth.model';
+import { NavigationTransitionService } from '../../../core/services/navigation-transition.service';
 
 @Component({
   selector: 'app-user-menu',
@@ -17,6 +18,7 @@ export class UserMenuComponent {
   readonly user = input.required<UserProfile>();
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly navigationTransition = inject(NavigationTransitionService);
 
   openChangePassword(): void {
     this.router.navigate(['/change-password']);
@@ -24,6 +26,6 @@ export class UserMenuComponent {
 
   logout(): void {
     this.auth.logout();
-    this.router.navigate(['/login']);
+    this.navigationTransition.navigate(this.router, ['/login']);
   }
 }

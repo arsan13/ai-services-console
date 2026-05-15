@@ -1,0 +1,182 @@
+<div class="container">
+  <section class="toolbar">
+    <div>
+      <h2>Admin Access Requests</h2>
+      <p class="subtitle">Operational queue with compact records and inline review actions.</p>
+    </div>
+    <div class="toolbar-actions">
+      <span class="metric-pill">Visible: {{ requests().length }}</span>
+      <span class="metric-pill">Page size: {{ pageSize() }}</span>
+      <label class="status-filter">
+        <span>Status</span>
+        <select [value]="selectedStatus()" (change)="onStatusChange($any($event.target).value)">
+          @for (status of statusOptions; track status) {
+            <option [value]="status">{{ status }}</option>
+          }
+        </select>
+      </label>
+    </div>
+  </section>
+
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner></mat-spinner>
+    </div>
+  } @else if (requests().length === 0) {
+    <mat-card class="empty-state">
+      <mat-card-content>
+        <p>No access requests found for {{ selectedStatus() }}.</p>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <div class="table-region">
+      <div class="table-shell">
+        <div class="table-header">
+          <span>Request</span>
+          <span>Requester</span>
+          <span>Dates</span>
+          <span>Requested Access</span>
+          <span>Comments</span>
+          <span>Review Actions</span>
+        </div>
+
+        <div class="table-body">
+          @for (request of requests(); track request.id) {
+            <article class="request-row" [class.transitioning-out]="isTransitioning(request.id)">
+              <div class="summary-grid">
+                <div class="request-col">
+                  <span class="request-id">#{{ request.id }}</span>
+                  <span
+                    class="status-pill"
+                    [class.status-pending]="request.status === statusEnum.PENDING"
+                    [class.status-approved]="request.status === statusEnum.APPROVED"
+                    [class.status-rejected]="request.status === statusEnum.REJECTED"
+                    [class.status-revoked]="request.status === statusEnum.REVOKED"
+                    [class.status-cancelled]="request.status === statusEnum.CANCELLED"
+                  >
+                    {{ request.status }}
+                  </span>
+                </div>
+
+                <div class="requester-col">
+                  <p class="primary">{{ request.requesterName || 'User #' + request.requesterId }}</p>
+                  <p class="secondary">Requester ID: {{ request.requesterId }}</p>
+                </div>
+
+                <div class="dates-col">
+                  <p><strong>Requested:</strong> {{ request.requestedDate | date:'short' }}</p>
+                  <p><strong>Reviewed:</strong> {{ request.reviewedDate ? (request.reviewedDate | date:'short') : 'Pending' }}</p>
+                </div>
+
+                <div>
+                  <div class="tags compact">
+                    @for (permission of request.permissions | slice:0:3; track permission) {
+                      <span class="tag permission-tag">{{ permission }}</span>
+                    }
+                    @for (role of request.roles | slice:0:2; track role) {
+                      <span class="tag role-tag">{{ role }}</span>
+                    }
+                    @if (request.permissions.length + request.roles.length > 5) {
+                      <span class="tag neutral-tag">+{{ request.permissions.length + request.roles.length - 5 }} more</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="comments-col">
+                  <p class="comment-preview">{{ request.requesterComment || 'No requester comment.' }}</p>
+                  @if (request.reviewerComment) {
+                    <p class="comment-preview reviewer">{{ request.reviewerComment }}</p>
+                  }
+                </div>
+
+                <div class="action-col">
+                  @if (canApproveRequests()) {
+                    <mat-form-field appearance="outline" class="review-input">
+                      <mat-label>Reviewer comment</mat-label>
+                      <textarea
+                        matInput
+                        rows="2"
+                        [value]="getReviewerComment(request.id)"
+                        (input)="updateReviewerComment(request.id, $any($event.target).value)"
+                        placeholder="Optional review note"
+                      ></textarea>
+                    </mat-form-field>
+
+                    <div class="action-buttons">
+                      @if (request.status === statusEnum.PENDING) {
+                        <button mat-flat-button color="primary" (click)="onApprove(request.id)" [disabled]="isProcessing(request.id) || isTransitioning(request.id)">
+                          @if (isProcessing(request.id)) {
+                            <mat-spinner diameter="18"></mat-spinner>
+                          } @else {
+                            Approve
+                          }
+                        </button>
+                        <button mat-stroked-button color="warn" (click)="onReject(request.id)" [disabled]="isProcessing(request.id) || isTransitioning(request.id)">
+                          Reject
+                        </button>
+                      }
+                      @if (request.status === statusEnum.APPROVED) {
+                        <button mat-stroked-button color="warn" (click)="onRevoke(request.id)" [disabled]="isProcessing(request.id) || isTransitioning(request.id)">
+                          Revoke
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <details class="details-panel">
+                <summary>Full details</summary>
+                <div class="details-grid">
+                  <section>
+                    <h4>Requester Comment</h4>
+                    <p class="detail-comment">{{ request.requesterComment || 'No requester comment.' }}</p>
+                  </section>
+
+                  <section>
+                    <h4>Reviewer Comment</h4>
+                    <p class="detail-comment reviewer">{{ request.reviewerComment || 'No reviewer comment.' }}</p>
+                  </section>
+
+                  <section>
+                    <h4>Permissions</h4>
+                    <div class="tags">
+                      @for (permission of request.permissions; track permission) {
+                        <span class="tag permission-tag">{{ permission }}</span>
+                      }
+                      @if (request.permissions.length === 0) {
+                        <span class="empty-inline">No permissions requested.</span>
+                      }
+                    </div>
+                  </section>
+
+                  <section>
+                    <h4>Roles</h4>
+                    <div class="tags">
+                      @for (role of request.roles; track role) {
+                        <span class="tag role-tag">{{ role }}</span>
+                      }
+                      @if (request.roles.length === 0) {
+                        <span class="empty-inline">No roles requested.</span>
+                      }
+                    </div>
+                  </section>
+                </div>
+              </details>
+            </article>
+          }
+        </div>
+      </div>
+
+      <div class="pagination">
+        <button mat-icon-button [disabled]="currentPage() === 0" (click)="onPreviousPage()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <span class="page-info">Page {{ currentPage() + 1 }} of {{ totalPages() }}</span>
+        <button mat-icon-button [disabled]="currentPage() >= totalPages() - 1" (click)="onNextPage()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+</div>

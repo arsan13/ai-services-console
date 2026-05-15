@@ -1,0 +1,283 @@
+<div class="page-wrapper" [class.transitioning-out]="isNavigatingToRequests()">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1>Request New Access</h1>
+        <p class="header-subtitle">Request additional permissions or roles for your account</p>
+      </div>
+      <div class="header-badge" aria-label="User account">{{ currentUser?.email }}</div>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  @if (successMessage()) {
+    <div class="success-banner" role="status" aria-live="polite">
+      <span class="success-icon">✓</span>
+      <div>
+        <strong>{{ successMessage() }}</strong>
+        <p>Redirecting to your requests...</p>
+      </div>
+    </div>
+  }
+
+  <!-- Main Content -->
+  <div class="content-area">
+    <div class="grid-layout">
+      <!-- Left Column: Current State -->
+      <div class="section-column snapshot-column">
+        <!-- Pending Access Card -->
+        @if (pendingPermissions().size > 0 || pendingRoles().size > 0) {
+          <div class="card pending-access-card">
+            <div class="card-header">
+              <h3>Pending Access</h3>
+              <span class="badge-info">In review</span>
+            </div>
+            <div class="card-content">
+              @if (pendingRoles().size > 0) {
+                <div class="access-group">
+                  <h4 class="access-label">Pending Roles</h4>
+                  <div class="chip-container">
+                    @for (role of [...pendingRoles()]; track role) {
+                      <span class="chip chip-pending">{{ role }}</span>
+                    }
+                  </div>
+                </div>
+              }
+              @if (pendingPermissions().size > 0) {
+                <div class="access-group">
+                  <h4 class="access-label">Pending Permissions</h4>
+                  <div class="chip-container">
+                    @for (permission of [...pendingPermissions()]; track permission) {
+                      <span class="chip chip-pending">{{ permission }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Assigned Access Card -->
+        @if (assignedPermissions.size > 0 || assignedRoles.size > 0) {
+          <div class="card current-access-card">
+            <div class="card-header">
+              <h3>Assigned Access</h3>
+              <span class="badge-info">Read-only</span>
+            </div>
+            <div class="card-content">
+              @if (assignedRoles.size > 0) {
+                <div class="access-group">
+                  <h4 class="access-label">Assigned Roles</h4>
+                  <div class="chip-container">
+                    @for (role of [...assignedRoles]; track role) {
+                      <span class="chip chip-role">{{ role }}</span>
+                    }
+                  </div>
+                </div>
+              }
+              @if (assignedPermissions.size > 0) {
+                <div class="access-group">
+                  <h4 class="access-label">Assigned Permissions</h4>
+                  <div class="chip-container">
+                    @for (permission of [...assignedPermissions]; track permission) {
+                      <span class="chip chip-permission">{{ permission }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Right Column: Request Form -->
+      <div class="section-column">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="request-form">
+          <!-- Request Details Card -->
+          <div class="card request-details-card">
+            <div class="card-header">
+              <h3>Request Details</h3>
+              <span class="required-indicator">*</span>
+            </div>
+            <div class="card-content">
+              <div class="form-field-wrapper">
+                <label for="requesterComment" class="form-label">
+                  Why do you need this access?
+                  <span class="required-indicator">*</span>
+                </label>
+                <textarea
+                  id="requesterComment"
+                  matInput
+                  formControlName="requesterComment"
+                  class="comment-textarea"
+                  rows="5"
+                  placeholder="Provide a detailed description of your access needs, business justification, and use cases...">
+                </textarea>
+                @if (controls.requesterComment.invalid && controls.requesterComment.touched) {
+                  <p class="field-error">
+                    @if (controls.requesterComment.hasError('required')) {
+                      Comment is required
+                    } @else if (controls.requesterComment.hasError('minlength')) {
+                      Please provide at least 10 characters
+                    }
+                  </p>
+                }
+                <p class="field-hint">Minimum 10 characters • Be specific about your needs</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Access Selection Card -->
+          <div class="card access-selection-card">
+            <div class="card-header">
+              <h3>Select Access to Request</h3>
+              <span class="header-hint">At least one required</span>
+            </div>
+            <div class="card-content">
+              <!-- Roles Section -->
+              <div class="selection-section">
+                <div class="section-header">
+                  <h4>Roles</h4>
+                  <p class="section-hint">Roles include pre-mapped permissions</p>
+                </div>
+                <div class="options-grid">
+                  @for (role of availableRoles; track role) {
+                    <label class="option-card" [class.disabled]="isRoleUnavailable(role)">
+                      <input
+                        type="checkbox"
+                        [value]="role"
+                        [checked]="controls.roles.value.includes(role)"
+                        [disabled]="isRoleUnavailable(role)"
+                        (change)="onRoleChange($event, role)"
+                        aria-label="Select {{ role }} role">
+                      <div class="option-content">
+                        <span class="option-title">{{ role }}</span>
+                        @if (isRoleAssigned(role)) {
+                          <span class="status-tag status-assigned">Already assigned</span>
+                        } @else if (isRolePending(role)) {
+                          <span class="status-tag status-pending">Pending approval</span>
+                        } @else if ((rolePermissionsMap()[role] ?? []).length > 0) {
+                          <span class="status-tag status-includes">
+                            {{ (rolePermissionsMap()[role] ?? []).length }} permission(s)
+                          </span>
+                        }
+                      </div>
+                    </label>
+                  }
+                </div>
+              </div>
+
+              <!-- Permissions Section -->
+              <div class="selection-section">
+                <div class="section-header">
+                  <h4>Permissions</h4>
+                  <p class="section-hint">Individual permissions for fine-grained control</p>
+                </div>
+                <div class="options-grid">
+                  @for (permission of availablePermissions; track permission) {
+                    <label class="option-card" [class.disabled]="isPermissionUnavailable(permission)">
+                      <input
+                        type="checkbox"
+                        [value]="permission"
+                        [checked]="controls.permissions.value.includes(permission)"
+                        [disabled]="isPermissionUnavailable(permission)"
+                        (change)="onPermissionChange($event, permission)"
+                        aria-label="Select {{ permission }} permission">
+                      <div class="option-content">
+                        <span class="option-title">{{ permission }}</span>
+                        @if (isPermissionAssigned(permission)) {
+                          <span class="status-tag status-assigned">Already assigned</span>
+                        } @else if (isPermissionPending(permission)) {
+                          <span class="status-tag status-pending">Pending approval</span>
+                        }
+                      </div>
+                    </label>
+                  }
+                </div>
+              </div>
+
+              <!-- Validation Error -->
+              @if (form.hasError('accessTargetRequired') && (controls.permissions.touched || controls.roles.touched || form.touched)) {
+                <div class="validation-error">
+                  <span class="error-icon">⚠</span>
+                  <p>Please select at least one permission or role to continue</p>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Request Summary Card -->
+          @if (controls.roles.value.length > 0 || controls.permissions.value.length > 0) {
+            <div class="card request-summary-card">
+              <div class="card-header">
+                <h3>Request Summary</h3>
+              </div>
+              <div class="card-content">
+                @if (controls.roles.value.length > 0) {
+                  <div class="summary-group">
+                    <h4>Requested Roles</h4>
+                    <div class="chip-container">
+                      @for (role of controls.roles.value; track role) {
+                        <span class="chip chip-role-new">{{ role }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+                @if (controls.permissions.value.length > 0) {
+                  <div class="summary-group">
+                    <h4>Requested Permissions</h4>
+                    <div class="chip-container">
+                      @for (permission of controls.permissions.value; track permission) {
+                        <span class="chip chip-permission-new">{{ permission }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Info Box -->
+          <div class="info-box">
+            <span class="info-icon">ℹ</span>
+            <div>
+              <strong>How this works:</strong>
+              <ul>
+                <li>Selecting a role automatically includes its mapped permissions</li>
+                <li>You can manually adjust permissions after role selection</li>
+                <li>Assigned or pending roles/permissions cannot be re-requested</li>
+                <li>Admin role cannot be requested through this form</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="isLoading() || form.invalid"
+              class="submit-btn">
+              @if (isLoading()) {
+                <mat-spinner diameter="18"></mat-spinner>
+                <span>Submitting...</span>
+              } @else {
+                <span>Submit Request</span>
+              }
+            </button>
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="onCancel()"
+              [disabled]="isLoading()"
+              class="cancel-btn">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
