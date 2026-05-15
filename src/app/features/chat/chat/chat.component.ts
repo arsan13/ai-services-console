@@ -1,6 +1,6 @@
-import { Component, ViewChild, ElementRef, effect, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ViewChild, ElementRef, effect, ChangeDetectionStrategy, inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, isPlatformBrowser } from '@angular/common';
 import { ChatbotService } from '../../../core/services/chatbot.service';
 import { ChatTypeService } from '../../../core/services/chat-type.service';
 import { ChatTypeCode } from '../../../core/models/chat-type.model';
@@ -43,9 +43,17 @@ export class ChatComponent {
 
   readonly chatService = inject(ChatbotService);
   readonly chatTypeService = inject(ChatTypeService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   constructor() {
-    this.chatTypeService.load();
+    const shouldForceRefresh = isPlatformBrowser(this.platformId)
+      && sessionStorage.getItem('refreshChatTypesAfterVerification') === '1';
+
+    this.chatTypeService.load(shouldForceRefresh);
+
+    if (shouldForceRefresh) {
+      sessionStorage.removeItem('refreshChatTypesAfterVerification');
+    }
 
     effect(() => {
       // Watch messages signal and scroll to bottom when messages change

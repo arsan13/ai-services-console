@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../../core/services/auth.service';
+import { ChatTypeService } from '../../../core/services/chat-type.service';
 import { UserService } from '../../../core/services/user.service';
 import { PLATFORM_ID } from '@angular/core';
 
@@ -22,6 +23,7 @@ import { PLATFORM_ID } from '@angular/core';
 })
 export class VerifyEmailComponent {
   private readonly authService = inject(AuthService);
+  private readonly chatTypeService = inject(ChatTypeService);
   private readonly userService = inject(UserService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -55,6 +57,7 @@ export class VerifyEmailComponent {
         if (message.toLowerCase().includes('already verified')) {
           this.verificationError.set(null);
           this.isAlreadyVerified.set(true);
+          this.refreshUserAndChatAfterVerification();
           setTimeout(() => this.router.navigate(['/chat']), 3000);
           return;
         }
@@ -70,10 +73,28 @@ export class VerifyEmailComponent {
       this.userService.set({ ...user, verified: true });
     }
 
+    this.refreshUserAndChatAfterVerification();
+
     this.verificationError.set(null);
     this.isAlreadyVerified.set(false);
     this.isVerified.set(true);
     setTimeout(() => this.router.navigate(['/chat']), 3000);
+  }
+
+  private refreshUserAndChatAfterVerification(): void {
+    if (!isPlatformBrowser(this.platformId) || !this.authService.isLoggedIn()) {
+      return;
+    }
+
+    this.userService.verifySession().subscribe({
+      next: () => {
+        this.chatTypeService.refresh();
+        sessionStorage.setItem('refreshChatTypesAfterVerification', '1');
+      },
+      error: () => {
+        sessionStorage.setItem('refreshChatTypesAfterVerification', '1');
+      }
+    });
   }
 
   goToChat(): void {

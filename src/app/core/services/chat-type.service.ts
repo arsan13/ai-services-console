@@ -36,8 +36,8 @@ export class ChatTypeService {
 
   readonly selectedChatTypeCode = computed(() => this.selectedChatType()?.code ?? null);
 
-  load(): void {
-    if (this.chatTypesSignal().length > 0 || this.loading()) {
+  load(force: boolean = false): void {
+    if ((!force && this.chatTypesSignal().length > 0) || this.loading()) {
       return;
     }
 
@@ -51,6 +51,10 @@ export class ChatTypeService {
     ).subscribe((chatTypes) => {
       this.chatTypesSignal.set(chatTypes);
     });
+  }
+
+  refresh(): void {
+    this.load(true);
   }
 
   selectChatType(code: ChatTypeCode): void {

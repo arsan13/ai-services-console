@@ -58,7 +58,7 @@ export class ViewerApprovalsComponent implements OnInit {
     this.loadRequests();
   }
 
-  private loadRequests(): void {
+  private loadRequests(showRefreshToast: boolean = false): void {
     this.isLoading.set(true);
     const status = this.selectedStatus();
     const requests$ = status === 'ALL'
@@ -73,6 +73,9 @@ export class ViewerApprovalsComponent implements OnInit {
         next: (page) => {
           this.requests.set(page.content);
           this.totalPages.set(page.totalPages);
+          if (showRefreshToast) {
+            this.snackBar.open('Table refreshed', 'Close', { duration: 2000 });
+          }
         },
         error: (err) => {
           if (!this.isExpectedAccessRestriction(err)) {
@@ -92,6 +95,10 @@ export class ViewerApprovalsComponent implements OnInit {
     this.selectedStatus.set(normalized);
     this.currentPage.set(0);
     this.loadRequests();
+  }
+
+  onRefresh(): void {
+    this.loadRequests(true);
   }
 
   private normalizeFilterStatus(rawStatus: string): ViewerFilterStatus {
