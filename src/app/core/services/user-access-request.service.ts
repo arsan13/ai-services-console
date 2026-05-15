@@ -48,6 +48,6 @@ export class UserAccessRequestService {
   }
 
   cancelAccessRequest(requestId: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${requestId}/cancel`, {});
+    return this.http.put<void>(`${this.apiUrl}/${requestId}/cancel`, {});
   }
 }
